@@ -1,4 +1,4 @@
-#A basic django-graphQL implementation.
+# A basic django-graphQL implementation.
 
 ### `python manage.py runserver` 
 Run the development server on windows, from the project root folder (django_graphQL).
