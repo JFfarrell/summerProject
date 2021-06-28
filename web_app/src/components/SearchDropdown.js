@@ -22,7 +22,7 @@ function SearchDropdown(endpoint) {
   return (
     <div>
       <input type="text" placeholder="Search by stop number" onChange={event => {setNameSearch(event.target.value)}} />
-      { data.name.filter((val)=> {
+      { data.allCustomers.filter((val)=> {
         if (nameSearch === "") {
           return val
         } else if (val.name.toLowerCase().includes(nameSearch.toLowerCase())) {
