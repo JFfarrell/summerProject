@@ -36,8 +36,22 @@ class CreateCustomer(graphene.Mutation):
         )
 
 
+class DeleteCustomer(graphene.Mutation):
+    id = graphene.Int()
+
+    class Arguments:
+        id = graphene.Int()
+
+    def mutate(self, info, id):
+        customer = Customers(id=id)
+        customer.delete()
+
+        return DeleteCustomer(id=id)
+
+
 class Mutation(graphene.ObjectType):
     create_customer = CreateCustomer.Field()
+    delete_customer = DeleteCustomer.Field()
 
 
 schema = graphene.Schema(
