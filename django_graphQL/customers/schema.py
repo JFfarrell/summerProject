@@ -16,4 +16,31 @@ class Query(graphene.ObjectType):
         return Customers.objects.all()
 
 
-schema = graphene.Schema(query=Query)
+class CreateCustomer(graphene.Mutation):
+    id = graphene.Int()
+    name = graphene.String()
+    gender = graphene.String()
+
+    class Arguments:
+        name = graphene.String()
+        gender = graphene.String()
+
+    def mutate(self, info, name, gender):
+        customer = Customers(name=name, gender=gender)
+        customer.save()
+
+        return CreateCustomer(
+            id=customer.id,
+            name=customer.name,
+            gender=customer.gender
+        )
+
+
+class Mutation(graphene.ObjectType):
+    create_customer = CreateCustomer.Field()
+
+
+schema = graphene.Schema(
+    query=Query,
+    mutation=Mutation
+)
