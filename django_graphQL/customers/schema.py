@@ -2,6 +2,8 @@ import graphene
 from graphene_django import DjangoObjectType
 from .models import Customers
 
+'''The following classes and class methods are for providing graphene/GraphQL mutations.'''
+
 
 class CustomerType(DjangoObjectType):
     class Meta:
@@ -36,6 +38,28 @@ class CreateCustomer(graphene.Mutation):
         )
 
 
+class UpdateCustomer(graphene.Mutation):
+    id = graphene.Int(required=True)
+    name = graphene.String()
+    gender = graphene.String()
+
+    class Arguments:
+        id = graphene.Int()
+        name = graphene.String()
+        gender = graphene.String()
+
+    def mutate(self, info, id, name, gender):
+        customer = Customers(id=id, name=name, gender=gender)
+        customer.save()
+
+        return UpdateCustomer(
+            id=customer.id,
+            name=customer.name,
+            gender=customer.gender
+        )
+
+
+# https://stackoverflow.com/questions/55442189/delete-mutation-in-django-graphql
 class DeleteCustomer(graphene.Mutation):
     id = graphene.Int()
 
@@ -52,6 +76,7 @@ class DeleteCustomer(graphene.Mutation):
 class Mutation(graphene.ObjectType):
     create_customer = CreateCustomer.Field()
     delete_customer = DeleteCustomer.Field()
+    update_customer = UpdateCustomer.Field()
 
 
 schema = graphene.Schema(
