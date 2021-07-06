@@ -1,4 +1,4 @@
-import SearchDropdown from "../SearchDropdown"
+import SearchDropdown from "./SearchDropdown"
 
 function RealtimeTab() {
   return(
