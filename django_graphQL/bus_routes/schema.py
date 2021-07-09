@@ -7,19 +7,14 @@ class BusRouteType(DjangoObjectType):
     class Meta:
         model = BusRoute
         fields = ('id',
-                  'StopSequence',
-                  'RouteName',
-                  'RouteDescription',
-                  'Direction',
-                  'AtcoCode',
-                  'PlateCode',
-                  'Latitude',
-                  'Longitude',
-                  'ShortCommonName_en',
-                  'ShortCommonName_ga',
-                  'HasPole',
-                  'HasShelter',
-                  'RouteData')
+                  'stop_id',
+                  'stop_sequence',
+                  'destination',
+                  'stop_name',
+                  'latitude',
+                  'longitude',
+                  'ainm',
+                  'route_num')
 
 
 class Query(graphene.ObjectType):
