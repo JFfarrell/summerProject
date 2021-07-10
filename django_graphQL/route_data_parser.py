@@ -1,6 +1,7 @@
 import pandas as pd
 import sqlite3
 
+print("Reading in data files...")
 stop_times = pd.read_csv("data/stop_times.txt")
 stops_df = pd.read_csv("data/stops.txt")
 all_routes_sequences = pd.read_csv("data/route_seqs.csv")
@@ -19,7 +20,10 @@ print("shapes list made")
 # create an empty dataframe to fill from the stop_times df
 # this may take some time
 new_df = stop_times.iloc[0:0]
-print("empty data frame ready")
+print("""
+Empty data frame ready.
+Appending parsed data to new dataframe.
+This is the longest part of the script, please be patient.""")
 
 remaining = len(all_shapes)
 for shape_id in all_shapes:
@@ -71,6 +75,11 @@ def route_finder(row):
     return id_strings[1]
 
 
+# function to create id column values
+def create_id(row):
+    return row["shape_id"] + "_" + row["stop_num"]
+
+
 # function for isolating the stop number for each row
 def stop_finder(row):
     stop_string = row['stop_name'].split(' ')
@@ -89,17 +98,21 @@ def trip_to_shape_id(row):
 
 
 print("Merging and altering dateframe, this may take some time...")
+
 merged_df['ainm'] = merged_df.apply(agus_ainm, axis=1)
 print("Irish names added successfully.")
 
 merged_df['route_num'] = merged_df.apply(route_finder, axis=1)
 print("Route numbers added successfully.")
 
-merged_df['id'] = merged_df.apply(trip_to_shape_id, axis=1)
+merged_df['shape_id'] = merged_df.apply(trip_to_shape_id, axis=1)
 print("trip id removed and replaced with shape id.")
 
 merged_df['stop_num'] = merged_df.apply(stop_finder, axis=1)
 print("stop numbers added successfully.")
+
+merged_df["id"] = merged_df.apply(create_id, axis=1)
+print("row id value created successfully.")
 
 print("Data successfully merged. Altering column headers...")
 
@@ -110,3 +123,4 @@ merged_df.rename(columns={"stop_headsign": "destination",
 print("Complete. Loading to database now.")
 db = sqlite3.connect("db.sqlite3")
 merged_df.to_sql("bus_routes_busroute", db, if_exists="replace", index=False)
+print("Finished. Whew, that was long...")
