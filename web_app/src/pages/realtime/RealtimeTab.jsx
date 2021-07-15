@@ -1,4 +1,5 @@
-import UserDropdown from "../../components/UserDropdown"
+import StopsDropdown from "../../components/StopsDropdown"
+import RoutesDropdown from "../../components/RoutesDropdown"
 import GoogleMap from "../../components/GoogleMap"
 
 function RealtimeTab() {
@@ -32,10 +33,10 @@ function RealtimeTab() {
       <div style={content}>
         <div style={dropdownsContainer}>
           <div style={userdropdownContainer}>
-            <UserDropdown />
+            <StopsDropdown />
           </div>
           <div style={stopdropdownContainer}>
-            <UserDropdown />
+            <RoutesDropdown />
           </div>
         </div>
         <div style={mapContainer}>
