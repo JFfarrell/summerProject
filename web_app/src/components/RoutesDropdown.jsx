@@ -45,7 +45,7 @@ function  RoutesDropdown() {
         { data.uniqueRoutes.filter((val)=> {
           if (routeSearch === "") {
             return val
-          } else if (val.routeNum.includes(routeSearch)) {
+          } else if (val.routeNum.startsWith(routeSearch)) {
             return val
           } else {
             return null
