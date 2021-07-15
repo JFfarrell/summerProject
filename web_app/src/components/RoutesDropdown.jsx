@@ -19,24 +19,43 @@ function  RoutesDropdown() {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
 
+  function chooseRoute(route) {
+    console.log(route)
+  }
+
+  const container = {
+    width: "13vw",
+    minWidth: "11rem",
+  }
+  const buttonContainer = {
+    height: "10rem"
+  };
+  const button = {
+    display: "block",
+    width: "100%",
+    height: "2rem",
+    margin: "3% 0"
+  };
+
   return (
-    <div>
+    <div style={container}>
+      <h3>Choose a Route</h3>
       <input type="text" placeholder="Search by route number" onChange={event => {setRouteSearch(event.target.value)}} />
-      { data.uniqueRoutes.filter((val)=> {
-        if (routeSearch === "") {
-          return val
-        } else if (val.routeNum.includes(routeSearch)) {
-          return val
-        } else {
-          return null
-        }
-      }).slice(0, 10).map(({ id, routeNum }) => {
-        return (
-          <div key={id}>
-            <p>{routeNum}</p>
-          </div>
-        )
-      })}
+      <div style={buttonContainer}>
+        { data.uniqueRoutes.filter((val)=> {
+          if (routeSearch === "") {
+            return val
+          } else if (val.routeNum.includes(routeSearch)) {
+            return val
+          } else {
+            return null
+          }
+        }).slice(0, 8).map(({ id, routeNum }) => {
+          return (
+            <input type="button" style={button} key={id} value={routeNum} onClick={ () => {chooseRoute(routeNum)}}></input>
+          )
+        })}
+      </div>
     </div>
   )
 }

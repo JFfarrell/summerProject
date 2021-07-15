@@ -14,13 +14,14 @@ function RealtimeTab() {
     gridColumnEnd: "2",
     margin: "0 0 0 3rem",
     display: "grid",
-    gridTemplateRows: "1fr 1fr"
+    gridTemplateRows: "1fr 1fr",
+    justifyContent: "center"
   };
-  const userdropdownContainer  = {
-    margin: "3rem"
+  const stopsDropdownContainer  = {
+    margin: "1rem 3rem"
   };
-  const stopdropdownContainer  = {
-    margin: "3rem"
+  const routesDropdownContainer  = {
+    margin: "1rem 3rem"
   };
   const mapContainer = {
     background: "lightgrey",
@@ -32,10 +33,10 @@ function RealtimeTab() {
     <div>
       <div style={content}>
         <div style={dropdownsContainer}>
-          <div style={userdropdownContainer}>
+          <div style={stopsDropdownContainer}>
             <StopsDropdown />
           </div>
-          <div style={stopdropdownContainer}>
+          <div style={routesDropdownContainer}>
             <RoutesDropdown />
           </div>
         </div>
