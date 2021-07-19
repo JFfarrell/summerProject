@@ -1,6 +1,6 @@
 import graphene
 from graphene_django import DjangoObjectType
-from .models import BusRoute, UniqueStops
+from .models import BusRoute, UniqueStops, UniqueRoutes
 
 
 class BusRouteType(DjangoObjectType):
@@ -31,10 +31,18 @@ class UniqueStopsType(DjangoObjectType):
                   'stop_num')
 
 
+class UniqueRoutesType(DjangoObjectType):
+    class Meta:
+        model = UniqueRoutes
+        fields = ('route_num',
+                  'outbound_stops',
+                  'inbound_stops')
+
+
 class Query(graphene.ObjectType):
     all_bus_routes = graphene.List(BusRouteType)
     unique_stops = graphene.List(UniqueStopsType)
-    unique_routes = graphene.List(BusRouteType)
+    unique_routes = graphene.List(UniqueRoutesType)
     route_by_num = graphene.List(BusRouteType, route_num=graphene.String(required=True))
     route_by_stop = graphene.List(BusRouteType, stop_num=graphene.String(required=True))
 
@@ -44,13 +52,7 @@ class Query(graphene.ObjectType):
 
     # return a list of unique bus routes
     def resolve_unique_routes(root, info):
-      route_list = []
-      return_list = []
-      for route in BusRoute.objects.all():
-        if route.route_num not in route_list:
-          route_list.append(route.route_num)
-          return_list.append(route)
-      return return_list
+      return UniqueRoutes.objects.all()
 
     # returns a list of bus_route objects that have a matching route number
     def resolve_route_by_num(root, info, route_num):

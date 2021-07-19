@@ -1,11 +1,13 @@
 import pandas as pd
 import sqlite3
 from parsing_functions import *
+import warnings
+warnings.filterwarnings('ignore')
 
 print("Reading in data files...")
-stop_times = pd.read_csv("data/stop_times.txt")
-stops_df = pd.read_csv("data/stops.txt")
-all_routes_sequences = pd.read_csv("data/route_seqs.csv")
+stop_times = pd.read_csv("files/stop_times.txt")
+stops_df = pd.read_csv("files/stops.txt")
+all_routes_sequences = pd.read_csv("files/route_seqs.csv")
 print("all files read in.")
 
 # I need a list of all "shapes"
@@ -96,9 +98,17 @@ unique_stops = unique_stops[["stop_id",
                              "ainm",
                              "stop_num"]].sort_values(by='stop_id')
 
+print("Creating unique routes dataframe.")
+unique_routes = merged_df.drop_duplicates(subset=['route_num'], keep='first')
+unique_routes['outbound_stops'] = unique_routes.apply(stops_outbound, df=merged_df, axis=1)
+unique_routes['inbound_stops'] = unique_routes.apply(stops_inbound, df=merged_df, axis=1)
+unique_routes = unique_routes[["route_num",
+                               "inbound_stops",
+                               "outbound_stops"]].sort_values(by='route_num')
 
 print("Complete. Loading to database now.")
-db = sqlite3.connect("db.sqlite3")
+db = sqlite3.connect("../db.sqlite3")
 merged_df.to_sql("bus_routes_busroute", db, if_exists="replace", index=False)
 unique_stops.to_sql("bus_routes_uniquestops", db, if_exists="replace", index=False)
+unique_routes.to_sql("bus_routes_uniqueroutes", db, if_exists="replace", index=False)
 print("Finished. Whew, that was long...")

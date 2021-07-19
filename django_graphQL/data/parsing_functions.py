@@ -40,3 +40,30 @@ def trip_to_shape_id(row):
     id_string = row['trip_id'].split('.')
     shape_id = id_string[2] + '.' + id_string[3] + '.' + id_string[4]
     return shape_id
+
+
+# function for attaching column with list of stops served by route outbound
+def stops_outbound(row, df):
+    current_route = row['route_num']
+    stops = df[df['route_num'] == current_route]
+    outbound = stops[stops['direction'] == "outbound"]
+    outbound_stops = outbound["stop_num"].unique().tolist()
+    if len(outbound_stops) == 0:
+        outbound_stops = "None"
+    else:
+        outbound_stops = " ".join(outbound_stops)
+    return outbound_stops
+
+
+# function for attaching column with list of stops served by route outbound
+def stops_inbound(row, df):
+    current_route = row['route_num']
+    stops = df[df['route_num'] == current_route]
+    inbound = stops[stops['direction'] == "inbound"]
+    inbound_stops = inbound['stop_num'].unique().tolist()
+
+    if len(inbound_stops) == 0:
+        inbound_stops = "None"
+    else:
+        inbound_stops = " ".join(inbound_stops)
+    return inbound_stops

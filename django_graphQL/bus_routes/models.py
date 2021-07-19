@@ -29,3 +29,12 @@ class UniqueStops(models.Model):
 
     def __str__(self):
         return self.stop_id
+
+
+class UniqueRoutes(models.Model):
+    route_num = models.CharField("route_num", max_length=10, primary_key=True)
+    inbound_stops = models.TextField("inbound_stops", default="None")
+    outbound_stops = models.TextField("outbound_stops", default="None")
+
+    def __str__(self):
+        return self.route_num
