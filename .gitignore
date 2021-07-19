@@ -1,4 +1,5 @@
 .idea
 *.pyc
-.env
+web_app/env
 django_graphQL/data
+django_graphQL/bus_routes/migrations

@@ -1,5 +1,6 @@
 import pandas as pd
 import sqlite3
+from parsing_functions import *
 
 print("Reading in data files...")
 stop_times = pd.read_csv("data/stop_times.txt")
@@ -53,53 +54,16 @@ print("dublin bus irish stop names filtered and ready to merge in.")
 # And now we need to merge in the irish name and make some other changes
 
 # !! warning !! some of these functions take a long time to run,
-# they will be optimised at a later point
 
 # we need a list of stops paired with their irish names to match with the dataframe
-my_list = [tuple(r) for r in db_stops_filtered.to_numpy()]
+first_list = [tuple(r) for r in db_stops_filtered.to_numpy()]
 filtered_list = []
-for item in my_list:
+for item in first_list:
     filtered_list.append(item[0])
-
-
-# function to find and append the irish name for the stop
-def agus_ainm(row):
-    if row['stop_id'] in filtered_list:
-        item = my_list[filtered_list.index(row['stop_id'])]
-        return item[1]
-
-
-# function to find and match the row with its correct customer facing route number
-def route_finder(row):
-    id_strings = row['trip_id'].split('-')
-    return id_strings[1]
-
-
-# function to create id column values
-def create_id(row):
-    return row["shape_id"] + "_" + row["stop_num"]
-
-
-# function for isolating the stop number for each row
-def stop_finder(row):
-    stop_string = row['stop_name'].split(' ')
-    if stop_string[-1].isdigit:
-        return stop_string[-1]
-    else:
-        return "No stop number."
-
-
-# and one more to change the trip_id to a shape_id as we have no need of unique trip info here
-# this whole process has been about removing duplicated "shape" data, so unique trips don't help
-def trip_to_shape_id(row):
-    id_string = row['trip_id'].split('.')
-    shape_id = id_string[2] + '.' + id_string[3] + '.' + id_string[4]
-    return shape_id
-
 
 print("Merging and altering dateframe, this may take some time...")
 
-merged_df['ainm'] = merged_df.apply(agus_ainm, axis=1)
+merged_df['ainm'] = merged_df.apply(agus_ainm, first_list=first_list, filtered_list=filtered_list, axis=1)
 print("Irish names added successfully.")
 
 merged_df['route_num'] = merged_df.apply(route_finder, axis=1)
@@ -114,13 +78,27 @@ print("stop numbers added successfully.")
 merged_df["id"] = merged_df.apply(create_id, axis=1)
 print("row id value created successfully.")
 
+merged_df["direction"] = merged_df.apply(route_direction, axis=1)
+print("Route direction added successfully.")
+
 print("Data successfully merged. Altering column headers...")
 
 merged_df.rename(columns={"stop_headsign": "destination",
                           "stop_lat": "latitude",
                           "stop_lon": "longitude"}, inplace=True)
 
+print("Creating unique stops dataframe.")
+unique_stops = merged_df.drop_duplicates(subset=['stop_num'], keep='first')
+unique_stops = unique_stops[["stop_id",
+                             "latitude",
+                             "longitude",
+                             "stop_name",
+                             "ainm",
+                             "stop_num"]].sort_values(by='stop_id')
+
+
 print("Complete. Loading to database now.")
 db = sqlite3.connect("db.sqlite3")
 merged_df.to_sql("bus_routes_busroute", db, if_exists="replace", index=False)
+unique_stops.to_sql("bus_routes_uniquestops", db, if_exists="replace", index=False)
 print("Finished. Whew, that was long...")
