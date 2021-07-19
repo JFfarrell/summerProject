@@ -5,8 +5,11 @@ const ROUTES = gql`
   query {
     uniqueRoutes {
       id
+      stopName
       stopNum
       routeNum
+      latitude
+      longitude
     }
   }
 `;
@@ -15,9 +18,6 @@ function  RoutesDropdown() {
 
   const { loading, error, data } = useQuery(ROUTES);
   const [routeSearch, setRouteSearch] = useState('');
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error :(</p>;
 
   function chooseRoute(route) {
     console.log(route)
@@ -37,6 +37,9 @@ function  RoutesDropdown() {
     margin: "3% 0"
   };
 
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error :(</p>;
+
   return (
     <div style={container}>
       <h3>Choose a Route</h3>
@@ -50,9 +53,9 @@ function  RoutesDropdown() {
           } else {
             return null
           }
-        }).slice(0, 8).map(({ id, routeNum }) => {
+        }).slice(0, 8).map((route) => {
           return (
-            <input type="button" style={button} key={id} value={routeNum} onClick={ () => {chooseRoute(routeNum)}}></input>
+            <input type="button" style={button} key={route.id} value={route.routeNum} onClick={ () => {chooseRoute(route)}}></input>
           )
         })}
       </div>
