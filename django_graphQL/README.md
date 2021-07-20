@@ -22,6 +22,9 @@ Django customers application. Further readme details within.
 `django_graphgQL/`
 General django settings files, including url routing and provision for the above applications.
 
+`data`
+contains sourcing and parsing scripts for various data sources used in the application.
+
 `db.sqlite3`
 SQLite database containing routes and customers information.
 

@@ -26,6 +26,7 @@ class UniqueStops(models.Model):
     longitude = models.FloatField("longitude")
     stop_name = models.CharField("stop_name", max_length=100)
     ainm = models.CharField("ainm", max_length=100)
+    stop_num = models.CharField("stop_num", max_length=10, default="None")
 
     def __str__(self):
         return self.stop_id
@@ -38,3 +39,20 @@ class UniqueRoutes(models.Model):
 
     def __str__(self):
         return self.route_num
+
+
+class FilteredRoutes(models.Model):
+    id = models.CharField("id", max_length=100, primary_key=True)
+    stop_id = models.CharField("stop_id", max_length=50)
+    stop_sequence = models.IntegerField("stop_sequence")
+    destination = models.CharField("destination", max_length=100)
+    stop_name = models.CharField("stop_name", max_length=100)
+    latitude = models.FloatField("latitude")
+    longitude = models.FloatField("longitude")
+    ainm = models.CharField("ainm", max_length=100)
+    route_num = models.CharField("route_num", max_length=20)
+    stop_num = models.CharField("stop_num", max_length=20, default=0)
+    direction = models.CharField("direction", max_length=50, default="None")
+
+    def __str__(self):
+        return self.id

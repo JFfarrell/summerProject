@@ -54,7 +54,6 @@ print("dublin bus irish stop names filtered and ready to merge in.")
 
 
 # And now we need to merge in the irish name and make some other changes
-
 # !! warning !! some of these functions take a long time to run,
 
 # we need a list of stops paired with their irish names to match with the dataframe
@@ -98,8 +97,20 @@ unique_stops = unique_stops[["stop_id",
                              "ainm",
                              "stop_num"]].sort_values(by='stop_id')
 
+print("Creating filtered dataframe, with only one instance per route.")
+unique_routes = merged_df["route_num"].unique().tolist()
+filtered_df = merged_df.iloc[0:0]
+
+for db_route in unique_routes:
+    current_shape_df = merged_df[merged_df["route_num"] == db_route]
+    no_repeats = current_shape_df.drop_duplicates(subset=['stop_sequence'], keep='first')
+
+    filtered_df = filtered_df.append(no_repeats, ignore_index=True)
+
+filtered_df = filtered_df.drop(["trip_id", "shape_id"], axis=1)
+
 print("Creating unique routes dataframe.")
-unique_routes = merged_df.drop_duplicates(subset=['route_num'], keep='first')
+unique_routes = merged_df.drop_duplicates(subset=['stop_num'], keep='first')
 unique_routes['outbound_stops'] = unique_routes.apply(stops_outbound, df=merged_df, axis=1)
 unique_routes['inbound_stops'] = unique_routes.apply(stops_inbound, df=merged_df, axis=1)
 unique_routes = unique_routes[["route_num",
@@ -111,4 +122,5 @@ db = sqlite3.connect("../db.sqlite3")
 merged_df.to_sql("bus_routes_busroute", db, if_exists="replace", index=False)
 unique_stops.to_sql("bus_routes_uniquestops", db, if_exists="replace", index=False)
 unique_routes.to_sql("bus_routes_uniqueroutes", db, if_exists="replace", index=False)
+filtered_df.to_sql("bus_routes_filteredroutes", db, if_exists="replace", index=False)
 print("Finished. Whew, that was long...")
