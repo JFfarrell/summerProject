@@ -1,6 +1,7 @@
 import StopsDropdown from "../../components/StopsDropdown"
 import RoutesDropdown from "../../components/RoutesDropdown"
 import GoogleMap from "../../components/GoogleMap"
+import { StationsProvider } from "../../contexts/stations"
 
 function RealtimeTab() {
   const content = {
@@ -30,7 +31,7 @@ function RealtimeTab() {
     margin: "0 3rem"
   };
   return(
-    <div>
+    <StationsProvider>
       <div style={content}>
         <div style={dropdownsContainer}>
           <div style={stopsDropdownContainer}>
@@ -44,7 +45,7 @@ function RealtimeTab() {
           <GoogleMap />
         </div>
       </div>
-    </div>
+      </StationsProvider>
   )
 }
 

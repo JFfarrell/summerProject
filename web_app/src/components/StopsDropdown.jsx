@@ -1,12 +1,15 @@
 import { useQuery, gql } from "@apollo/client";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { StationsContext } from "../contexts/stations";
 
 const STOPS = gql`
   query {
     uniqueStops {
       id
+      stopName
       stopNum
-      routeNum
+      latitude
+      longitude
     }
   }
 `;
@@ -16,27 +19,49 @@ function  StopsDropdown() {
   const { loading, error, data } = useQuery(STOPS);
   const [stopSearch, setStopSearch] = useState('');
 
+  const [, dispatch ] = useContext(StationsContext);
+
+  function chooseStop(route) {
+    dispatch({type: "update_stations", payload: [route]})
+  };
+
+  const container = {
+    width: "13vw",
+    minWidth: "11rem",
+    height: "400px"
+  };
+  const buttonContainer = {
+    height: "10rem"
+  };
+  const button = {
+    display: "block",
+    width: "100%",
+    height: "2rem",
+    margin: "3% 0"
+  };
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
 
   return (
-    <div>
+    <div style={container}>
+      <h3>Choose a Stop</h3>
       <input type="text" placeholder="Search by stop number" onChange={event => {setStopSearch(event.target.value)}} />
-      { data.uniqueStops.filter((val)=> {
-        if (stopSearch === "") {
-          return val
-        } else if (val.stopNum.includes(stopSearch)) {
-          return val
-        } else {
-          return null
-        }
-      }).slice(0, 10).map(({ id, stopNum }) => {
-        return (
-          <div key={id}>
-            <p>{stopNum}</p>
-          </div>
-        )
-      })}
+      <div style={buttonContainer}>
+        { data.uniqueStops.filter((val)=> {
+          if (stopSearch === "") {
+            return val
+          } else if (val.stopNum.startsWith(stopSearch)) {
+            return val
+          } else {
+            return null
+          }
+        }).slice(0, 8).map((stop) => {
+          return (
+            <input type="button" style={button} key={stop.id} value={stop.stopNum} onClick={ () => {chooseStop(stop)}}></input>
+          )
+        })}
+      </div>
     </div>
   )
 }
