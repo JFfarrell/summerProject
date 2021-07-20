@@ -22,15 +22,24 @@ function MapPin(props) {
     borderLeft: "2rem solid transparent",
     borderRight: "2rem solid transparent",
     
-    borderTop: "3rem solid grey"
+    borderTop: "3rem solid lightgrey"
   }
   const boxContainer = {
     display: "block",
-    backgroundColor: "grey",
+    backgroundColor: "lightgrey",
     marginLeft: "-8rem",
     marginTop: "-26rem",
     height: "23rem",
     width: "30rem"
+  };
+  const header = {
+    paddingTop: "0.5rem",
+    fontSize: "1.4rem",
+    display: "grid",
+    gridTemplateColumns: "5fr 1fr"
+  };
+  const closeButton = {
+    cursor: 'pointer',
   };
   function togglePopup() {
     var box = document.getElementById("boxContainer");
@@ -58,7 +67,14 @@ function MapPin(props) {
         style={boxContainer} 
         id="boxContainer"
       >
-        <h3>{name}</h3>
+        <div style={header}>
+          <h3>{name}</h3>
+          <div>
+            <p style={closeButton} onClick={togglePopup}>X</p>
+          </div>
+        </div>
+        <hr />
+        <p>arrival/departure time information here...</p>
       </div>
     </div>
   )
