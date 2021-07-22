@@ -60,8 +60,6 @@ class Query(graphene.ObjectType):
         return UniqueRoutes.objects.all()
 
 
-
-
 schema = graphene.Schema(
     query=Query
 )
