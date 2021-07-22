@@ -42,28 +42,80 @@ def trip_to_shape_id(row):
     return shape_id
 
 
-# function for attaching column with list of stops served by route outbound
-def stops_outbound(row, df):
+def stops(row, df):
     current_route = row['route_num']
-    stops = df[df['route_num'] == current_route]
-    outbound = stops[stops['direction'] == "outbound"]
-    outbound_stops = outbound["stop_num"].unique().tolist()
-    if len(outbound_stops) == 0:
-        outbound_stops = "None"
+    stops_df = df[df['route_num'] == current_route]
+    outbound_stops = stops_df[stops_df['direction'] == "outbound"]
+    inbound_stops = stops_df[stops_df['direction'] == "inbound"]
+    outbound_stops = outbound_stops["stop_num"].unique().tolist()
+    inbound_stops = inbound_stops["stop_num"].unique().tolist()
+
+    if row["direction"] == "outbound":
+        stops = outbound_stops
+    if row["direction"] == "inbound":
+        stops = inbound_stops
+
+    if len(stops) == 0:
+        stops = "None"
     else:
-        outbound_stops = " ".join(outbound_stops)
-    return outbound_stops
+        stops = ", ".join(stops)
+    return stops
 
 
-# function for attaching column with list of stops served by route outbound
-def stops_inbound(row, df):
+def name(row, df):
     current_route = row['route_num']
-    stops = df[df['route_num'] == current_route]
-    inbound = stops[stops['direction'] == "inbound"]
-    inbound_stops = inbound['stop_num'].unique().tolist()
+    current = df[df['route_num'] == current_route]
+    inbound_names = current[current["direction"] == "inbound"]
+    outbound_names = current[current["direction"] == "outbound"]
+    inbound_names = inbound_names['stop_name'].tolist()
+    outbound_names = outbound_names['stop_name'].tolist()
 
-    if len(inbound_stops) == 0:
-        inbound_stops = "None"
+    if row["direction"] == "outbound":
+        names = outbound_names
+    if row["direction"] == "inbound":
+        names = inbound_names
+
+    if len(names) == 0:
+        names = "None"
+
     else:
-        inbound_stops = " ".join(inbound_stops)
-    return inbound_stops
+        names_modified = []
+        for item in names:
+            names_modified.append(item.split(",")[0])
+        names = names_modified
+        names = ([str(x) for x in names])
+        names = ", ".join(names)
+    return names
+
+
+def coordinates(row, df):
+    current_route = row['route_num']
+    current = df[df['route_num'] == current_route]
+    inbound_coords = current[current["direction"] == "inbound"]
+    outbound_coords = current[current["direction"] == "outbound"]
+    inbound_coords = inbound_coords['lat_long'].tolist()
+    outbound_coords = outbound_coords['lat_long'].tolist()
+
+    if row["direction"] == "outbound":
+        coords = outbound_coords
+    if row["direction"] == "inbound":
+        coords = inbound_coords
+
+    if len(inbound_coords) == 0:
+        coords = "None"
+    else:
+        coords = ([str(x) for x in coords])
+        coords = ", ".join(coords)
+    return coords
+
+
+def combine_coords(row, df):
+    return str(row["latitude"]) + ", " + str(row["longitude"])
+
+
+def unique_id(row):
+    return row["route_num"] + "_" + row["direction"]
+
+
+def route_nums(row):
+    return row["route_num"]

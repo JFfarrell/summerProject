@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'bus_routes',
     'graphene_django',
     'corsheaders',
+    'django_filters'
 ]
 
 MIDDLEWARE = [
@@ -47,7 +48,6 @@ CORS_ORIGIN_WHITELIST = [
     # React Dev App Domain
     "http://localhost:3000",
     "http://172.22.80.1:3000"
-    
 ]
 
 ROOT_URLCONF = 'django_graphQL.urls'
