@@ -1,15 +1,16 @@
 import { useQuery, gql } from "@apollo/client";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { StationsContext } from "../contexts/stations";
 
 const ROUTES = gql`
   query {
     uniqueRoutes {
-      id
-      stopName
-      stopNum
-      routeNum
-      latitude
-      longitude
+        routeNum
+        direction
+        destination
+        coordinates
+        stops
+        names
     }
   }
 `;
@@ -19,8 +20,27 @@ function  RoutesDropdown() {
   const { loading, error, data } = useQuery(ROUTES);
   const [routeSearch, setRouteSearch] = useState('');
 
+  const [, dispatch ] = useContext(StationsContext);
+
   function chooseRoute(route) {
-    console.log(route)
+    // get all required data split out
+    let stopNums = route.stops.split(",");
+    let stopNames = route.names.split(",");
+    let coordinates = route.coordinates.split(",");
+
+    // new array to store organised data
+    let routeOrganised = [];
+
+    // iterate through data and add to organised list
+    let lat = 0;
+    let long = 1;
+    for (let i = 0; i < stopNums.length; i++) {
+      let newStop = {"stopName": stopNames[i].trim(), "stopNum": stopNums[i].trim(), "latitude": coordinates[lat].trim(), "longitude": coordinates[long].trim()};
+      routeOrganised.push(newStop)
+      lat += 2;
+      long += 2;
+    }
+    dispatch({type: "update_stations", payload: [routeOrganised]})
   }
 
   const container = {
@@ -48,14 +68,14 @@ function  RoutesDropdown() {
         { data.uniqueRoutes.filter((val)=> {
           if (routeSearch === "") {
             return val
-          } else if (val.routeNum.startsWith(routeSearch)) {
+          } else if (val.routeNum.toLowerCase().startsWith(routeSearch.toLowerCase())) {
             return val
           } else {
             return null
           }
         }).slice(0, 8).map((route) => {
           return (
-            <input type="button" style={button} key={route.id} value={route.routeNum} onClick={ () => {chooseRoute(route)}}></input>
+            <input type="button" style={button} key={route.routeNum + "-" + route.direction} value={route.routeNum + " (" + route.direction + ")"} onClick={ () => {chooseRoute(route)}}></input>
           )
         })}
       </div>

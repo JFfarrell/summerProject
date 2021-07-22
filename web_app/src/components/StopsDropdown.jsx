@@ -5,11 +5,10 @@ import { StationsContext } from "../contexts/stations";
 const STOPS = gql`
   query {
     uniqueStops {
-      id
-      stopName
-      stopNum
-      latitude
-      longitude
+        stopName
+        stopNum
+        latitude
+        longitude
     }
   }
 `;
@@ -21,8 +20,8 @@ function  StopsDropdown() {
 
   const [, dispatch ] = useContext(StationsContext);
 
-  function chooseStop(route) {
-    dispatch({type: "update_stations", payload: [route]})
+  function chooseStop(stop) {
+    dispatch({type: "update_stations", payload: [stop]})
   };
 
   const container = {
@@ -58,7 +57,7 @@ function  StopsDropdown() {
           }
         }).slice(0, 8).map((stop) => {
           return (
-            <input type="button" style={button} key={stop.id} value={stop.stopNum} onClick={ () => {chooseStop(stop)}}></input>
+            <input type="button" style={button} key={stop.stopNum} value={stop.stopNum} onClick={ () => {chooseStop(stop)}}></input>
           )
         })}
       </div>

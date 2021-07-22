@@ -14,7 +14,7 @@ function MapPin(props) {
     transform: "translate(-50%, -50%)"
   };
   const arrow = {
-    display: "block",
+    display: "none",
     width: "0",
     height: "0",
     marginLeft: "-2rem",
@@ -25,7 +25,7 @@ function MapPin(props) {
     borderTop: "3rem solid lightgrey"
   }
   const boxContainer = {
-    display: "block",
+    display: "none",
     backgroundColor: "lightgrey",
     marginLeft: "-8rem",
     marginTop: "-26rem",

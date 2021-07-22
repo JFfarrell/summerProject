@@ -19,15 +19,26 @@ export default function SimpleMap(){
   var pins = [];
 
   if (state) {
-    for (var i = 0; i < state.length; i++) {
-    pins.push(
-      <MapPin
-        key={state[i].id}
-        lat={state[i].latitude}
-        lng={state[i].longitude}
-        name={state[i].stopName}
-      />
-    )
+    if (state[0].length > 1) {
+      state[0].forEach((stop) => {
+          pins.push(
+            <MapPin
+              key={stop.stopNum}
+              lat={stop.latitude}
+              lng={stop.longitude}
+              name={stop.stopName}
+            />
+          )
+      });
+    } else {
+      pins.push(
+        <MapPin
+          key={state[0].stopNum}
+          lat={state[0].latitude}
+          lng={state[0].longitude}
+          name={state[0].stopName}
+        />
+      )
     }
   }
 
