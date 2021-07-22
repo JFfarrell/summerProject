@@ -1,7 +1,4 @@
 import graphene
-from graphene_django.types import DjangoObjectType
-from graphene.types.generic import GenericScalar
-from graphene import ObjectType
 from .types import *
 
 
