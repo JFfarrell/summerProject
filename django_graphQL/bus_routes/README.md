@@ -19,9 +19,14 @@ Creates the BusRoute model class.
 `schema.py`
 Creates a BusRoute object that can be queried by graphQL. Three querys are housed here:
 
+`types.py`
+Contains graphene object types
+
 - resolve_unique_stops: returns every unique stop
 
 - resolve_unique_routes: returns every unique route
+![route1in](https://user-images.githubusercontent.com/71881578/126664189-0173cf28-a8f2-45e9-b0b3-b1d0119149a1.PNG)
+![route1out](https://user-images.githubusercontent.com/71881578/126664199-8751caf9-cad0-4f65-9133-de88ebc01493.PNG)
 
 -resolve_all_bus_routes: catch all. returns all data for all routes, no parameters required.
 ![allQ](https://user-images.githubusercontent.com/71881578/125189397-ce744a00-e22f-11eb-9914-c4a44b18ce2f.PNG)
