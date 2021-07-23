@@ -41,9 +41,9 @@ function MapPin(props) {
   const closeButton = {
     cursor: 'pointer',
   };
-  function togglePopup() {
-    var box = document.getElementById("boxContainer");
-    var arrow = document.getElementById("arrow");
+  function togglePopup(n) {
+    var box = document.getElementById(n+"-boxContainer");
+    var arrow = document.getElementById(n+"-arrow");
     if (box.style.display === "none") {
       box.style.display = "block";
       arrow.style.display = "block";
@@ -56,21 +56,21 @@ function MapPin(props) {
     <div>
       <div 
         style={marker}
-        onClick={togglePopup}
+        onClick={() => togglePopup(name)}
       />
       <div
         style={arrow}
-        id="arrow"
+        id={name+"-arrow"}
 
       />
       <div 
         style={boxContainer} 
-        id="boxContainer"
+        id={name+"-boxContainer"}
       >
         <div style={header}>
           <h3>{name}</h3>
           <div>
-            <p style={closeButton} onClick={togglePopup}>X</p>
+            <p style={closeButton} onClick={() => togglePopup(name)}>X</p>
           </div>
         </div>
         <hr />
