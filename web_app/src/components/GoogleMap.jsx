@@ -48,6 +48,7 @@ export default function SimpleMap(){
         bootstrapURLKeys={{ key: GOOGLE_API_KEY }}
         defaultCenter={defaultProps.center}
         defaultZoom={defaultProps.zoom}
+        yesIWantToUseGoogleMapApiInternals
       >
         {pins}
       </GoogleMapReact>
