@@ -67,8 +67,8 @@ def name(row, df):
     current = df[df['route_num'] == current_route]
     inbound_names = current[current["direction"] == "inbound"]
     outbound_names = current[current["direction"] == "outbound"]
-    inbound_names = inbound_names['stop_name'].tolist()
-    outbound_names = outbound_names['stop_name'].tolist()
+    inbound_names = inbound_names['stop_name'].unique().tolist()
+    outbound_names = outbound_names['stop_name'].unique().tolist()
 
     if row["direction"] == "outbound":
         names = outbound_names
@@ -93,8 +93,8 @@ def coordinates(row, df, coordinate):
     current = df[df['route_num'] == current_route]
     inbound_coordinate = current[current["direction"] == "inbound"]
     outbound_coordinate = current[current["direction"] == "outbound"]
-    inbound_coordinate = inbound_coordinate[coordinate].tolist()
-    outbound_coordinate = outbound_coordinate[coordinate].tolist()
+    inbound_coordinate = inbound_coordinate[coordinate].unique().tolist()
+    outbound_coordinate = outbound_coordinate[coordinate].unique().tolist()
 
     if row["direction"] == "outbound":
         coord = outbound_coordinate

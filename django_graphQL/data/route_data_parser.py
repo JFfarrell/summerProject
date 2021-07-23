@@ -97,26 +97,15 @@ unique_stops = unique_stops[["stop_id",
                              "ainm",
                              "stop_num"]].sort_values(by='stop_id')
 
-print("Creating filtered dataframe, with only one instance per route.")
-unique_routes = merged_df["route_num"].unique().tolist()
-filtered_df = merged_df.iloc[0:0]
-
-for db_route in unique_routes:
-    current_shape_df = merged_df[merged_df["route_num"] == db_route]
-    no_repeats = current_shape_df.drop_duplicates(subset=['stop_num'], keep='first')
-
-    filtered_df = filtered_df.append(no_repeats, ignore_index=True)
-
-filtered_df = filtered_df.drop(["trip_id", "shape_id"], axis=1)
-
 print("Creating unique routes dataframe.")
-unique_routes = merged_df.drop_duplicates(subset=['route_num', "direction"], keep='first')
+unique_routes = merged_df.drop_duplicates(subset=['route_num',
+                                                  "direction",
+                                                  "stop_sequence"], keep='first')
 unique_routes['stops'] = unique_routes.apply(stops, df=merged_df, axis=1)
 unique_routes['longitudes'] = unique_routes.apply(coordinates, df=merged_df, coordinate="longitude", axis=1)
 unique_routes['latitudes'] = unique_routes.apply(coordinates, df=merged_df, coordinate="latitude", axis=1)
 unique_routes['names'] = unique_routes.apply(name, df=merged_df, axis=1)
-unique_routes['id'] = unique_routes.apply(create_id, axis=1)
-
+unique_routes['id'] = unique_routes.apply(unique_id, axis=1)
 
 unique_routes = unique_routes[["id",
                                "route_num",
@@ -127,11 +116,11 @@ unique_routes = unique_routes[["id",
                                "destination",
                                "names"]].sort_values(by='route_num')
 
+unique_routes = unique_routes.drop_duplicates(subset=['id'], keep="first")
 
 print("Complete. Loading to database now.")
 db = sqlite3.connect("../db.sqlite3")
-merged_df.to_sql("bus_routes_busroute", db, if_exists="replace", index=False)
 unique_stops.to_sql("bus_routes_uniquestops", db, if_exists="replace", index=False)
+merged_df.to_sql("bus_routes_busroute", db, if_exists="replace", index=False)
 unique_routes.to_sql("bus_routes_uniqueroutes", db, if_exists="replace", index=False)
-filtered_df.to_sql("bus_routes_filteredroutes", db, if_exists="replace", index=False)
 print("Finished. Whew, that was long...")

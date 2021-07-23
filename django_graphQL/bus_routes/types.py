@@ -8,17 +8,11 @@ class BusRouteType(DjangoObjectType):
         model = BusRoute
 
 
-class UniqueStopsType(DjangoObjectType):
-    class Meta:
-        model = UniqueStops
-
-
 class UniqueRoutesType(DjangoObjectType):
     class Meta:
         model = UniqueRoutes
 
 
-class FilteredRoutesType(DjangoObjectType):
+class UniqueStopsType(DjangoObjectType):
     class Meta:
-        model = FilteredRoutes
-
+        model = UniqueStops
