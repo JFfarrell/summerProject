@@ -112,20 +112,20 @@ filtered_df = filtered_df.drop(["trip_id", "shape_id"], axis=1)
 print("Creating unique routes dataframe.")
 unique_routes = merged_df.drop_duplicates(subset=['route_num', "direction"], keep='first')
 unique_routes['stops'] = unique_routes.apply(stops, df=merged_df, axis=1)
-merged_df['lat_long'] = merged_df.apply(combine_coords, df=merged_df, axis=1)
-unique_routes['coordinates'] = unique_routes.apply(coordinates, df=merged_df, axis=1)
+unique_routes['longitudes'] = unique_routes.apply(coordinates, df=merged_df, coordinate="longitude", axis=1)
+unique_routes['latitudes'] = unique_routes.apply(coordinates, df=merged_df, coordinate="latitude", axis=1)
 unique_routes['names'] = unique_routes.apply(name, df=merged_df, axis=1)
-unique_routes['id'] = unique_routes.apply(unique_id, axis=1)
+unique_routes['id'] = unique_routes.apply(create_id, axis=1)
 
 
 unique_routes = unique_routes[["id",
                                "route_num",
                                "stops",
-                               "coordinates",
+                               "latitudes",
+                               "longitudes",
                                "direction",
                                "destination",
-                               "names",
-                               "shape_id"]].sort_values(by='route_num')
+                               "names"]].sort_values(by='route_num')
 
 
 print("Complete. Loading to database now.")

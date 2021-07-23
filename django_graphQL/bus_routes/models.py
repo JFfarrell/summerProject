@@ -37,7 +37,8 @@ class UniqueRoutes(models.Model):
     route_num = models.CharField("route_num", max_length=10, default="None")
     names = models.TextField("names", default="None")
     stops = models.TextField("outbound_stops", default="None")
-    coordinates = models.TextField("latitude", default="None")
+    latitudes = models.TextField("latitudes", default="None")
+    longitudes = models.TextField("longitudes", default="None")
     destination = models.CharField("destination", max_length=50, default="None")
     direction = models.CharField("direction", max_length=50, default="None")
 

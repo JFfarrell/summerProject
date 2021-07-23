@@ -88,29 +88,25 @@ def name(row, df):
     return names
 
 
-def coordinates(row, df):
+def coordinates(row, df, coordinate):
     current_route = row['route_num']
     current = df[df['route_num'] == current_route]
-    inbound_coords = current[current["direction"] == "inbound"]
-    outbound_coords = current[current["direction"] == "outbound"]
-    inbound_coords = inbound_coords['lat_long'].tolist()
-    outbound_coords = outbound_coords['lat_long'].tolist()
+    inbound_coordinate = current[current["direction"] == "inbound"]
+    outbound_coordinate = current[current["direction"] == "outbound"]
+    inbound_coordinate = inbound_coordinate[coordinate].tolist()
+    outbound_coordinate = outbound_coordinate[coordinate].tolist()
 
     if row["direction"] == "outbound":
-        coords = outbound_coords
+        coord = outbound_coordinate
     if row["direction"] == "inbound":
-        coords = inbound_coords
+        coord = inbound_coordinate
 
-    if len(inbound_coords) == 0:
-        coords = "None"
+    if len(coord) == 0:
+        coord = "None"
     else:
-        coords = ([str(x) for x in coords])
-        coords = ", ".join(coords)
-    return coords
-
-
-def combine_coords(row, df):
-    return str(row["latitude"]) + ", " + str(row["longitude"])
+        coord = ([str(x) for x in coord])
+        coord = ", ".join(coord)
+    return coord
 
 
 def unique_id(row):
