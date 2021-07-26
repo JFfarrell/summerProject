@@ -1,7 +1,7 @@
 function MapPin(props) {
-  const { name } = props;
+  const { name, markerColor } = props;
   const marker = {
-    backgroundColor: "#000",
+    backgroundColor: markerColor,
     cursor: 'pointer',
     position: "absolute",
     top: "0",

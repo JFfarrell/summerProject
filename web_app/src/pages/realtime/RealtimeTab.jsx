@@ -17,7 +17,8 @@ function RealtimeTab() {
     display: "grid",
     gridTemplateRows: "1fr 1fr",
     justifyContent: "center",
-    height: "1000px"
+    height: "1000px",
+    borderRadius: '1rem'
   };
   const stopsDropdownContainer  = {
     margin: "1rem 3rem"

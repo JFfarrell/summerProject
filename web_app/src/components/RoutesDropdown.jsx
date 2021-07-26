@@ -25,26 +25,22 @@ function  RoutesDropdown() {
   const [, dispatch ] = useContext(StationsContext);
 
   function chooseRoute(route) {
-    console.log(route)
     // get all required data split out
     let stopNums = route.stops.split(",");
     let stopNames = route.names.split(",");
     let latitudes = route.latitudes.split(",");
     let longitudes = route.longitudes.split(",");
-    console.log("numbers:" + stopNums.length)
-    console.log("names:" + stopNames.length)
-    console.log("lats:" + latitudes.length)
-    console.log("longs:" + longitudes.length)
 
     // new array to store organised data
     let routeOrganised = [];
 
     // iterate through data and add to organised list
     for (let i = 0; i < stopNums.length; i++) {
-      let newStop = {"stopName": stopNames[i].trim(), "stopNum": stopNums[i].trim(), "latitude": latitudes[i].trim(), "longitude": longitudes[i].trim()};
+      let newStop = {"routeNum": route.routeNum, "direction": route.direction, "stopName": stopNames[i].trim(), "stopNum": stopNums[i].trim(), "latitude": latitudes[i].trim(), "longitude": longitudes[i].trim()};
       routeOrganised.push(newStop)
       // console.log(newStop)
     }
+    console.log(routeOrganised)
     dispatch({type: "update_stations", payload: [routeOrganised]})
   }
 
