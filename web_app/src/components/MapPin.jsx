@@ -1,5 +1,5 @@
 function MapPin(props) {
-  const { name, markerColor } = props;
+  const { name, markerColor, openPopup } = props;
   const marker = {
     backgroundColor: markerColor,
     cursor: 'pointer',
@@ -13,7 +13,7 @@ function MapPin(props) {
     userSelect: "none",
     transform: "translate(-50%, -50%)"
   };
-  const arrow = {
+  var arrow = {
     display: "none",
     width: "0",
     height: "0",
@@ -21,16 +21,19 @@ function MapPin(props) {
     marginTop: "-3.65rem",
     borderLeft: "2rem solid transparent",
     borderRight: "2rem solid transparent",
-    
-    borderTop: "3rem solid lightgrey"
-  }
-  const boxContainer = {
+    borderTop: "3rem solid lightgrey",
+    position: "absolute",
+    zIndex: "3"
+  };
+  var boxContainer = {
     display: "none",
     backgroundColor: "lightgrey",
     marginLeft: "-8rem",
     marginTop: "-26rem",
     height: "23rem",
-    width: "30rem"
+    width: "30rem",
+    position: "absolute",
+    zIndex: "3"
   };
   const header = {
     paddingTop: "0.5rem",
@@ -41,7 +44,47 @@ function MapPin(props) {
   const closeButton = {
     cursor: 'pointer',
   };
+
+  // if openPopup prop is true, then ensure the marker renders with popup open
+  if (openPopup) {
+    arrow = {
+      display: "block",
+      width: "0",
+      height: "0",
+      marginLeft: "-2rem",
+      marginTop: "-3.65rem",
+      borderLeft: "2rem solid transparent",
+      borderRight: "2rem solid transparent",
+      borderTop: "3rem solid lightgrey",
+      position: "absolute",
+      zIndex: "3"
+    };
+    boxContainer = {
+      display: "block",
+      backgroundColor: "lightgrey",
+      marginLeft: "-8rem",
+      marginTop: "-26rem",
+      height: "23rem",
+      width: "30rem",
+      position: "absolute",
+      zIndex: "3"
+    };
+  }
+
   function togglePopup(n) {
+    // this function handles the opening of a popup for the stop clicked
+
+    // close already open popups
+    var boxClass = document.getElementsByClassName("boxContainer");
+    var arrowClass = document.getElementsByClassName("arrow");
+    for (let i = 0; i < boxClass.length; i++) {
+      if (boxClass[i].style.display === "block") {
+        boxClass[i].style.display = "none";
+        arrowClass[i].style.display = "none"
+      }
+    };
+
+    // open this popup
     var box = document.getElementById(n+"-boxContainer");
     var arrow = document.getElementById(n+"-arrow");
     if (box.style.display === "none") {
@@ -52,6 +95,7 @@ function MapPin(props) {
       arrow.style.display = "none";
     }
   }
+
   return(
     <div>
       <div 
@@ -60,11 +104,13 @@ function MapPin(props) {
       />
       <div
         style={arrow}
+        className={"arrow"}
         id={name+"-arrow"}
 
       />
       <div 
         style={boxContainer} 
+        className={"boxContainer"}
         id={name+"-boxContainer"}
       >
         <div style={header}>

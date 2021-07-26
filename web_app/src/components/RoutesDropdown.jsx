@@ -40,7 +40,6 @@ function  RoutesDropdown() {
       routeOrganised.push(newStop)
       // console.log(newStop)
     }
-    console.log(routeOrganised)
     dispatch({type: "update_stations", payload: [routeOrganised]})
   }
 
