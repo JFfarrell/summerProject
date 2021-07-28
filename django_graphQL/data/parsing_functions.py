@@ -62,7 +62,7 @@ def stops(row, df):
     return stops
 
 
-def name(row, df):
+def names(row, df):
     current_route = row['route_num']
     current = df[df['route_num'] == current_route]
     inbound_names = current[current["direction"] == "inbound"]
@@ -109,9 +109,83 @@ def coordinates(row, df, coordinate):
     return coord
 
 
-def unique_id(row):
+def create_uniques_id(row):
     return row["route_num"] + "_" + row["direction"]
 
 
-def route_nums(row):
-    return row["route_num"]
+def gach_ainm(row, df):
+    current_route = row['route_num']
+    ainm_df = df[df['route_num'] == current_route]
+    gach_ainm = ainm_df['ainm'].unique().tolist()
+
+    if len(gach_ainm) == 0:
+        ainms = "None"
+    else:
+        gach_ainm = ([str(x) for x in gach_ainm])
+        ainms = ", ".join(gach_ainm)
+    return ainms
+
+
+def find_longest(df):
+    route_shapes = df["shape_id"].unique().tolist()
+    longest_inbound = ""
+    longest_outbound = ""
+    length_inbound = 0
+    length_outbound = 0
+
+    for shape in route_shapes:
+        temp_df = df[df["shape_id"] == shape]
+        direction = temp_df["direction"].unique().tolist()
+
+        if direction[0] == "inbound" and temp_df.shape[0] > length_inbound:
+            longest_inbound = shape
+            length_inbound = temp_df.shape[0]
+        elif direction[0] == "outbound" and temp_df.shape[0] > length_outbound:
+            longest_outbound = shape
+            length_outbound = temp_df.shape[0]
+
+    return [longest_outbound, longest_inbound]
+
+
+def modify_merged_df(df, first_list, filtered_list):
+    print("Merging and altering dateframe, this may take some time...")
+    df['ainm'] = df.apply(agus_ainm, first_list=first_list, filtered_list=filtered_list, axis=1)
+    df['route_num'] = df.apply(route_finder, axis=1)
+    df['shape_id'] = df.apply(trip_to_shape_id, axis=1)
+    df['stop_num'] = df.apply(stop_finder, axis=1)
+    df["id"] = df.apply(create_id, axis=1)
+    df["direction"] = df.apply(route_direction, axis=1)
+
+    print("Data successfully merged. Altering column headers...")
+
+    df.rename(columns={"stop_headsign": "destination",
+                       "stop_lat": "latitude",
+                       "stop_lon": "longitude"}, inplace=True)
+
+
+def modify_df(df, shape):
+    df = df[df["shape_id"] == shape]
+    if df.empty:
+        pass
+    else:
+        df['stops'] = df.apply(stops, df=df, axis=1)
+        df['longitudes'] = df.apply(coordinates, df=df, coordinate="longitude", axis=1)
+        df['latitudes'] = df.apply(coordinates, df=df, coordinate="latitude", axis=1)
+        df['names'] = df.apply(names, df=df, axis=1)
+        df['gach_ainm'] = df.apply(gach_ainm, df=df, axis=1)
+        df['id'] = df.apply(create_uniques_id, axis=1)
+
+    return df
+
+
+def drop_columns(df):
+    df = df[["id",
+             "route_num",
+             "stops",
+             "latitudes",
+             "longitudes",
+             "direction",
+             "destination",
+             "names",
+             "gach_ainm"]].sort_values(by='route_num')
+    return df

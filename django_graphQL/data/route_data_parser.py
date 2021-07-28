@@ -62,31 +62,7 @@ filtered_list = []
 for item in first_list:
     filtered_list.append(item[0])
 
-print("Merging and altering dateframe, this may take some time...")
-
-merged_df['ainm'] = merged_df.apply(agus_ainm, first_list=first_list, filtered_list=filtered_list, axis=1)
-print("Irish names added successfully.")
-
-merged_df['route_num'] = merged_df.apply(route_finder, axis=1)
-print("Route numbers added successfully.")
-
-merged_df['shape_id'] = merged_df.apply(trip_to_shape_id, axis=1)
-print("trip id removed and replaced with shape id.")
-
-merged_df['stop_num'] = merged_df.apply(stop_finder, axis=1)
-print("stop numbers added successfully.")
-
-merged_df["id"] = merged_df.apply(create_id, axis=1)
-print("row id value created successfully.")
-
-merged_df["direction"] = merged_df.apply(route_direction, axis=1)
-print("Route direction added successfully.")
-
-print("Data successfully merged. Altering column headers...")
-
-merged_df.rename(columns={"stop_headsign": "destination",
-                          "stop_lat": "latitude",
-                          "stop_lon": "longitude"}, inplace=True)
+modify_merged_df(merged_df, first_list, filtered_list)
 
 print("Creating unique stops dataframe.")
 unique_stops = merged_df.drop_duplicates(subset=['stop_num'], keep='first')
@@ -101,26 +77,29 @@ print("Creating unique routes dataframe.")
 unique_routes = merged_df.drop_duplicates(subset=['route_num',
                                                   "direction",
                                                   "stop_sequence"], keep='first')
-unique_routes['stops'] = unique_routes.apply(stops, df=merged_df, axis=1)
-unique_routes['longitudes'] = unique_routes.apply(coordinates, df=merged_df, coordinate="longitude", axis=1)
-unique_routes['latitudes'] = unique_routes.apply(coordinates, df=merged_df, coordinate="latitude", axis=1)
-unique_routes['names'] = unique_routes.apply(name, df=merged_df, axis=1)
-unique_routes['id'] = unique_routes.apply(unique_id, axis=1)
 
-unique_routes = unique_routes[["id",
-                               "route_num",
-                               "stops",
-                               "latitudes",
-                               "longitudes",
-                               "direction",
-                               "destination",
-                               "names"]].sort_values(by='route_num')
+all_routes = merged_df["route_num"].unique().tolist()
 
-unique_routes = unique_routes.drop_duplicates(subset=['id'], keep="first")
+route1 = merged_df[merged_df["route_num"] == "1"]
+route_shapes = find_longest(route1)
+
+# given a dummy shape, just so we can produce the skeleton df
+append_df = modify_df(route1, route_shapes[0])
+append_df = append_df.iloc[0:0]
+
+for route in all_routes:
+    current_route = unique_routes[unique_routes["route_num"] == route]
+    route_shapes = find_longest(current_route)
+    for route_shape in route_shapes:
+        temp_df = modify_df(current_route, route_shape)
+        append_df = append_df.append(temp_df)
+
+append_df = drop_columns(append_df)
+append_df = append_df.drop_duplicates(subset=['id'], keep="first")
 
 print("Complete. Loading to database now.")
 db = sqlite3.connect("../db.sqlite3")
 unique_stops.to_sql("bus_routes_uniquestops", db, if_exists="replace", index=False)
 merged_df.to_sql("bus_routes_busroute", db, if_exists="replace", index=False)
-unique_routes.to_sql("bus_routes_uniqueroutes", db, if_exists="replace", index=False)
+append_df.to_sql("bus_routes_uniqueroutes", db, if_exists="replace", index=False)
 print("Finished. Whew, that was long...")
