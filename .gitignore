@@ -1,6 +1,6 @@
 .idea
 *.pyc
 web_app/env
-django_graphQL/data/files/
+django_graphQL/data/gtfs_datafiles/
 django_graphQL/bus_routes/migrations
-django_graphQL/data/apikey.py
+django_graphQL/bus_routes/weather/apikey.py

@@ -1,8 +1,10 @@
 import graphene
 from .types import *
+from .weather import weather_parser
 
 
 class Query(graphene.ObjectType):
+    weather = graphene.String()
     unique_stops = graphene.List(UniqueStopsType)
     all_bus_routes = graphene.List(BusRouteType)
     route_by_num = graphene.List(BusRouteType, route_num=graphene.String(required=True))
@@ -35,6 +37,11 @@ class Query(graphene.ObjectType):
     # returns a list of unique bus stops
     def resolve_unique_stops(root, info):
         return UniqueStops.objects.all()
+
+    def resolve_weather(root, info):
+        test = weather_parser.weather_info()
+        test = str(test)
+        return test
 
 
 schema = graphene.Schema(

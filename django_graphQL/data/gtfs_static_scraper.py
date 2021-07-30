@@ -27,7 +27,7 @@ zf = ZipFile("/tmp/tempfile.zip")
 
 # Extract its contents into <extraction_path>
 print("Writing dataset to path.")
-zf.extractall(path='files/')
+zf.extractall(path='gtfs_datafiles/')
 
 # close the ZipFile instance
 zf.close()
@@ -40,26 +40,26 @@ resp = requests.get(route_sequences)
 
 # write excel file to data directory
 print("Writing supplement excel sheet to path.")
-output = open('files/route_seqs.xls', 'wb')
+output = open('gtfs_datafiles/route_seqs.xls', 'wb')
 output.write(resp.content)
 output.close()
 
 print("Coverting excel sheet to csv.")
 # convert file to csv
-read_file = pd.read_excel("files/route_seqs.xls")
+read_file = pd.read_excel("gtfs_datafiles/route_seqs.xls")
 
 # Write the dataframe object into csv file
-read_file.to_csv("files/route_seqs.csv",
+read_file.to_csv("gtfs_datafiles/route_seqs.csv",
                  index=None,
                  header=True)
 
 print("Deleting redundant excel file")
-os.remove("files/route_seqs.xls")
-os.remove("files/agency.txt")
-os.remove("files/calendar.txt")
-os.remove("files/calendar_dates.txt")
-os.remove("files/shapes.txt")
-os.remove("files/routes.txt")
-os.remove("files/trips.txt")
+os.remove("gtfs_datafiles/route_seqs.xls")
+os.remove("gtfs_datafiles/agency.txt")
+os.remove("gtfs_datafiles/calendar.txt")
+os.remove("gtfs_datafiles/calendar_dates.txt")
+os.remove("gtfs_datafiles/shapes.txt")
+os.remove("gtfs_datafiles/routes.txt")
+os.remove("gtfs_datafiles/trips.txt")
 
 print("Finshed.")

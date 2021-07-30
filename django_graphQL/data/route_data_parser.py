@@ -4,11 +4,11 @@ from parsing_functions import *
 import warnings
 warnings.filterwarnings('ignore')
 
-print("Reading in data files...")
-stop_times = pd.read_csv("files/stop_times.txt")
-stops_df = pd.read_csv("files/stops.txt")
-all_routes_sequences = pd.read_csv("files/route_seqs.csv")
-print("all files read in.")
+print("Reading in data gtfs_datafiles...")
+stop_times = pd.read_csv("gtfs_datafiles/stop_times.txt")
+stops_df = pd.read_csv("gtfs_datafiles/stops.txt")
+all_routes_sequences = pd.read_csv("gtfs_datafiles/route_seqs.csv")
+print("all gtfs_datafiles read in.")
 
 # I need a list of all "shapes"
 all_shapes = []
