@@ -3,3 +3,4 @@
 web_app/env
 django_graphQL/data/files/
 django_graphQL/bus_routes/migrations
+django_graphQL/data/apikey.py
