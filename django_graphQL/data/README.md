@@ -12,3 +12,9 @@ necessary if updating the db with fresh routes data.
 
 `parsing_functions.py`
 Contains functions for parsing data for `route_data_parser`
+
+`weatherinfo.py`
+Contains functions for parsing data from openweather api
+
+`apikey.py`
+Contains the api key for weatherinfo.py (not hosted on github)
