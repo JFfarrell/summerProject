@@ -1,5 +1,5 @@
 import requests
-from .apikey import api_key
+from .apikey import api
 
 
 def weather_info():
@@ -9,13 +9,12 @@ def weather_info():
                        "wind_speed": 0,
                        "weather": 0}
 
-    forecast = requests.get(api_key)
+    forecast = requests.get(api)
     response = forecast.status_code
     if response != 200:
-        print("Open Weather is not responding")
-    else:
-        forecast_data = forecast.json()
+        raise ValueError("Url not reached.")
 
+    forecast_data = forecast.json()
     i = forecast_data["current"]
     current_weather["temp"] = i["temp"]
     current_weather["feels_like"] = i["feels_like"]

@@ -1,5 +1,7 @@
-import urllib.parse, urllib.error
-import requests, json
+import urllib.parse
+import urllib.error
+import requests
+import json
 
 
 headers = {
