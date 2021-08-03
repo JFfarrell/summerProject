@@ -16,11 +16,11 @@ Creates the application bus_routes.
 `models.py`
 Creates the BusRoute model class.
 
-`schema.py`
-Creates a BusRoute object that can be queried by graphQL. Three querys are housed here:
-
 `types.py`
 Contains graphene object types
+
+`schema.py`
+Creates a BusRoute object that can be queried by graphQL. Querys housed here are as follows:
 
 - resolve_unique_stops: returns every unique stop
 
