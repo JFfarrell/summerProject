@@ -3,5 +3,5 @@
 web_app/env
 django_graphQL/data/gtfs_datafiles/
 django_graphQL/bus_routes/migrations
-django_graphQL/bus_routes/weather/config.py
-django_graphQL/data/config.py
+django_graphQL/bus_routes/weather/weather_config.py
+django_graphQL/data/api_config.py

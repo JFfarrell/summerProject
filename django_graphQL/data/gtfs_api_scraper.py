@@ -2,13 +2,13 @@ import urllib.parse
 import urllib.error
 import requests
 import json
-import config
+import api_config
 
 
 headers = {
         # Request headers
         'Cache-Control': 'no-cache',
-        'x-api-key': config.apikey,
+        'x-api-key': api_config.apikey,
     }
 
 params = urllib.parse.urlencode({

@@ -1,5 +1,5 @@
 import requests
-from .config import api
+from .weather_config import api
 
 
 def weather_info():
