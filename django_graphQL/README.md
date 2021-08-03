@@ -1,8 +1,12 @@
 # A django-graphQL implementation.
 
-## 1. Key Commands
-### Requirements
-run `pip install -r requirements.txt` from project root folder.
+## 1. Essential commands and requirements
+
+### request and include appropriate config file in:
+django_graphQL/bus_routes/weather/weather_config.py
+django_graphQL/data/api_config.py
+
+### run `pip install -r requirements.txt` from project root folder.
 
 ### `python manage.py runserver` 
 Run the development server on windows, from the project root folder (django_graphQL).
