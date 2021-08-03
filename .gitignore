@@ -4,3 +4,4 @@ web_app/env
 django_graphQL/data/gtfs_datafiles/
 django_graphQL/bus_routes/migrations
 django_graphQL/bus_routes/weather/apikey.py
+django_graphQL/data/config.py

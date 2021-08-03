@@ -12,7 +12,7 @@ def weather_info():
     forecast = requests.get(api)
     response = forecast.status_code
     if response != 200:
-        raise ValueError("Url not reached.")
+        raise ValueError("url not reached.")
 
     forecast_data = forecast.json()
     i = forecast_data["current"]
