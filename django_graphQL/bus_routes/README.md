@@ -7,6 +7,9 @@ The application contains the following files and directories:
 `migrations/`
 Contains a record of migrations applied by Django to the bus_routes schema.
 
+`weather/`
+Data parsing function for provision of current weather information to be sent to the front-end.
+
 `admin.py`
 Creates functionality for this app at localhost:8000/admin (login required).
 
@@ -39,6 +42,8 @@ number is a required parameter.
 a required parameter.
 ![routeByStopQ](https://user-images.githubusercontent.com/71881578/125189419-e946be80-e22f-11eb-99d7-97d16a0746fe.PNG)
 
+- resolve_weather
+![image](https://user-images.githubusercontent.com/71881578/128151494-e791a60a-9a25-4cee-9f96-c8746aebc598.png)
 
 `tests.py`
 Space for unittesting. No unittests currently applied.
