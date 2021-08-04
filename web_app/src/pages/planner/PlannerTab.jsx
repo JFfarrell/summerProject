@@ -1,10 +1,8 @@
-import GooglePlaces from "../../components/GooglePlaces"
+import GooglePlaces from "../../components/GooglePlaces";
+import GoogleDirections from "../../components/GoogleDirections";
 
 function PlannerTab() {
 
-  function calcRoute() {
-    console.log("I tried...")
-  }
   return(
     <div>
 
@@ -14,15 +12,7 @@ function PlannerTab() {
 
       <GooglePlaces />
 
-      <hr />
-
-      <input id="origin" placeholder="Origin" type="text" />
-      <input id="destination" placeholder="Destination" type="text" />
-      <button onClick={calcRoute}>Calculate Route</button>
-
-
-
-      <div id="map"></div>
+      <GoogleDirections />
 
     </div>
   )
