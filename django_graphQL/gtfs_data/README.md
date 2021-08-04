@@ -3,7 +3,7 @@ A script for parsing route data information from multiple web sources and insert
 the SQLite db. Takes some time to run.
 
 `gtfs_api_scraper.py`
-Capacity for scraping the transport for ireland live gtfs data via api. Possibly redundant.
+Capacity for scraping the transport for ireland live gtfs data via api. Requires api_config.py
 
 `gtfs_static_scraper.py`
 Scrapes, unzips, and stores gtfs static data for use in route_data_parser.py. Some of these files are
@@ -16,5 +16,5 @@ Contains functions for parsing data for `route_data_parser`
 `weatherinfo.py`
 Contains functions for parsing data from openweather api
 
-`apikey.py`
-Contains the api key for weatherinfo.py (not hosted on github)
+`api_config.py`
+Contains the api key for api_config.py (not hosted on github)
