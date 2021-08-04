@@ -14,3 +14,8 @@
 
 # Route Data
 - Parsing GTFS static data dump from transportforireland.ie
+
+# Linear Regression Route
+- Functions to clean the dataframes.
+- Merging of the trips and weather dataframes.
+- Splitting merged dataframe on Line ID and Direction and carrying out linear regression. 
