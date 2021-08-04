@@ -11,3 +11,6 @@
 - Building and Testing models on this dataframe. (Decision Tree, Random Forest Regressor, K-Nearest Neighbour, Linear Regression).
 - Testing the accuracy of these models using statistical measurements (R2 Score, Mean absolute error and Root Mean Square Error).
 - Discussing our results and choosing a predictive model to carry out on the rest of our dataset.
+
+# Route Data
+- Parsing GTFS static data dump from transportforireland.ie
