@@ -3,7 +3,7 @@
 ## 1. Essential commands and requirements
 
 ### request and include appropriate config file in:
-django_graphQL/bus_routes/weather/weather_config.py
+django_graphQL/bus_routes/weather/weather_config.py and
 django_graphQL/data/api_config.py
 
 ### run `pip install -r requirements.txt` from project root folder.
