@@ -27,12 +27,20 @@ const center = {
   lng: -6.26
 };
 
+const emtpyPlaceObj = {
+  "label": null,
+  "value": {
+      "description": null,
+      "place_id": null,
+  }
+}
+
 
 export default function GoogleDirections() {
 
   // states for origin and destination values 
-  const [origin, setOrigin] = useState(null);
-  const [destination, setDestination] = useState(null);
+  const [origin, setOrigin] = useState(emtpyPlaceObj);
+  const [destination, setDestination] = useState(emtpyPlaceObj);
 
   // state for weather directions should be calculated yet
   const [calculate, setCalculate] = useState(false);
