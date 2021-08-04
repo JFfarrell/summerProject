@@ -1,5 +1,5 @@
 """
-This file is for scraping and storing the transport data necessary to populate
+This file is for scraping and storing the transport gtfs_data necessary to populate
 our database of stops and routes
 """
 
@@ -33,12 +33,12 @@ zf.extractall(path='gtfs_datafiles/')
 zf.close()
 
 
-# download our data from another source
+# download our gtfs_data from another source
 print("Downloading supplement excel sheet.")
 route_sequences = "https://www.transportforireland.ie/transitData/route_sequences_report_20210511_ALL.xlsx"
 resp = requests.get(route_sequences)
 
-# write excel file to data directory
+# write excel file to gtfs_data directory
 print("Writing supplement excel sheet to path.")
 output = open('gtfs_datafiles/route_seqs.xls', 'wb')
 output.write(resp.content)

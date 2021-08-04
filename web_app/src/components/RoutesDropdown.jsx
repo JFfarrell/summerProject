@@ -25,16 +25,16 @@ function  RoutesDropdown() {
   const [, dispatch ] = useContext(StationsContext);
 
   function chooseRoute(route) {
-    // get all required data split out
+    // get all required gtfs_data split out
     let stopNums = route.stops.split(",");
     let stopNames = route.names.split(",");
     let latitudes = route.latitudes.split(",");
     let longitudes = route.longitudes.split(",");
 
-    // new array to store organised data
+    // new array to store organised gtfs_data
     let routeOrganised = [];
 
-    // iterate through data and add to organised list
+    // iterate through gtfs_data and add to organised list
     for (let i = 0; i < stopNums.length; i++) {
       let newStop = {"routeNum": route.routeNum, "direction": route.direction, "stopName": stopNames[i].trim(), "stopNum": stopNums[i].trim(), "latitude": latitudes[i].trim(), "longitude": longitudes[i].trim()};
       routeOrganised.push(newStop)

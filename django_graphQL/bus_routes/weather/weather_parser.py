@@ -1,5 +1,5 @@
 import requests
-from .weather_config import api
+from .weather_config import api_key
 
 
 def weather_info():
@@ -11,7 +11,7 @@ def weather_info():
                        "weather": 0,
                        "icon": ""}
 
-    forecast = requests.get(api)
+    forecast = requests.get(api_key)
     response = forecast.status_code
     if response != 200:
         raise ValueError("url not reached.")

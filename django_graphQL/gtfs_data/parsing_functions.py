@@ -35,7 +35,7 @@ def route_direction(row):
 
 
 # and one more to change the trip_id to a shape_id as we have no need of unique trip info here
-# this whole process has been about removing duplicated "shape" data, so unique trips don't help
+# this whole process has been about removing duplicated "shape" gtfs_data, so unique trips don't help
 def trip_to_shape_id(row):
     id_string = row['trip_id'].split('.')
     shape_id = id_string[2] + '.' + id_string[3] + '.' + id_string[4]
