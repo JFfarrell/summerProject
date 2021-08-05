@@ -27,13 +27,15 @@ const center = {
   lng: -6.26
 };
 
+// an empty place object, to be used as placeholder
 const emtpyPlaceObj = {
   "label": null,
   "value": {
       "description": null,
       "place_id": null,
   }
-}
+};
+
 
 
 export default function GoogleDirections() {
@@ -42,35 +44,32 @@ export default function GoogleDirections() {
   const [origin, setOrigin] = useState(emtpyPlaceObj);
   const [destination, setDestination] = useState(emtpyPlaceObj);
 
-  // state for weather directions should be calculated yet
-  const [calculate, setCalculate] = useState(false);
+  // states for directions components
+  const [dirService, setDirService] = useState(<div></div>);
+  const [dirRender, setDirRender] = useState(<div></div>);
 
-  // function triggered when origin and destination selected
-  function calcRoute() {
-    if (origin !== null && destination !== null) {
-      setCalculate(true);
-    };
-  }
-
-  // state for directions response
-  const [response, setResponse] = useState(null);
+  // state for render count (otherwise @react-google-maps/api library has a problem with infinitley rendering)
   let count = useRef(0);
 
   // directions service options
   const DirectionsServiceOption = {
-    destination: { placeId: origin.value.place_id },
-    origin: { placeId: destination.value.place_id },
+    destination: { placeId: destination.value.place_id },
+    origin: { placeId: origin.value.place_id },
     travelMode: "TRANSIT",
   };
 
-  // directions callback which sets response
+  // directions callback which renders the directions on map or console logs error
   const directionsCallback = (response) => {
-    console.log(response);
-
     if (response !== null && origin !== null && count.current < 2) {
       if (response.status === "OK") {
         count.current += 1;
-        setResponse(response);
+        setDirRender(
+          <DirectionsRenderer
+            options={{
+              directions: response,
+            }}
+          />
+        );
       } else {
         count.current = 0;
         console.log("response: ", response);
@@ -78,10 +77,24 @@ export default function GoogleDirections() {
     }
   };
 
+  // function triggered when 'calculate route' button clicked
+  function calcRoute() {
+    if (origin !== null && destination !== null) {
+      setDirService(
+        <DirectionsService
+          options={DirectionsServiceOption}
+          callback={directionsCallback}
+        />
+      );
+      count.current = 0;
+    };
+  };
+
   return (
     <div>
       <div style={routeChoiceContainer}>
         <div style={placesDropdown}>
+          {/* palces autocomplete for choosing origin */}
           <GooglePlacesAutocomplete
             apiOptions={{ language: 'en-GB', region: 'ie' }}
             selectProps={{
@@ -100,6 +113,7 @@ export default function GoogleDirections() {
           />
         </div>    
         <div style={placesDropdown}>
+          {/* places autocomplete for choosing destination */}
           <GooglePlacesAutocomplete
             apiOptions={{ language: 'en-GB', region: 'ie' }}
             selectProps={{
@@ -119,24 +133,17 @@ export default function GoogleDirections() {
         </div>
         <button style={chooseRouteButton} onClick={calcRoute}>Calculate Route</button>
       </div>
+      {/* Map component */}
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={center}
         zoom={10}
       >
-        {response !== null && (
-          <DirectionsRenderer
-            options={{
-              directions: response,
-            }}
-          />
-        )}
-        {calculate && (
-          <DirectionsService
-            options={DirectionsServiceOption}
-            callback={directionsCallback}
-          />
-        )}
+        {/* directions components are dynamically rendered here */}
+        <div>
+          {dirRender}
+          {dirService}
+        </div>
       </GoogleMap>
     </div>
   )
