@@ -44,7 +44,7 @@ class Query(graphene.ObjectType):
 
     def resolve_prediction(root, info, route, direction, day, hour, month, rain, temp):
         # grab overall prediction time for route journey
-        test = pickle.load(open(f'./bus_routes/route_models/inbound/linearReg_{route}_In.pkl', 'rb'))
+        test = pickle.load(open(f'./bus_routes/route_models/inbound/RandForest_{route}.pkl', 'rb'))
         predicted_journey_time = test.predict([[day, hour, month, rain, temp]])
 
         # get the details of the requested route
