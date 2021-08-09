@@ -91,6 +91,7 @@ for line in line_list:
     longest_length_outbound = 0
     for shape in outbound_shapes:
         temp = merged_df[merged_df["shape_id"] == shape]
+        temp = temp.drop_duplicates(subset=["stop_sequence"], keep='first')
         if temp.shape[0] > longest_length_outbound:
             longest_length_outbound = temp.shape[0]
             longest_outbound = shape
@@ -99,6 +100,7 @@ for line in line_list:
     longest_length_inbound = 0
     for shape in inbound_shapes:
         temp = merged_df[merged_df["shape_id"] == shape]
+        temp = temp.drop_duplicates(subset=["stop_sequence"], keep='first')
         if temp.shape[0] > longest_length_inbound:
             longest_length_inbound = temp.shape[0]
             longest_inbound = shape
@@ -111,6 +113,11 @@ for line in line_list:
 
     longest_outbound = longest_outbound.drop_duplicates(subset=['stop_sequence'], keep='first')
     longest_inbound = longest_inbound.drop_duplicates(subset=['stop_sequence'], keep='first')
+
+    if not longest_outbound.empty:
+        longest_outbound = sort_by_sequence(longest_outbound)
+    if not longest_inbound.empty:
+        longest_inbound = sort_by_sequence(longest_inbound)
 
     longest_outbound = longest_outbound.drop(["shape_id", "trip_id"], axis=1)
     longest_inbound = longest_inbound.drop(["shape_id", "trip_id"], axis=1)

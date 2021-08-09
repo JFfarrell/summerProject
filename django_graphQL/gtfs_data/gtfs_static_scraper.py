@@ -15,7 +15,7 @@ zipurl = 'https://transitfeeds.com/p/transport-for-ireland/782/latest/download'
 # Download the file from the URL
 print("Accessing zip.")
 zipresp = urlopen(zipurl)
-tempzip = open("/tmp/tempfile.zip", "wb")
+tempzip = open("tempfile.zip", "wb")
 
 # Write the contents of the downloaded file into the new file
 tempzip.write(zipresp.read())

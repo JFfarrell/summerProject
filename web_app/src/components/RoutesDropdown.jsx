@@ -5,6 +5,7 @@ import { StationsContext } from "../contexts/stations";
 const ROUTES = gql`
   query {
     uniqueRoutes {
+        id
         lineId
         direction
         destination
@@ -12,7 +13,8 @@ const ROUTES = gql`
         latitudes
         names
         stops
-        names
+        gachAinm
+        firstDepartureSchedule
     }
   }
 `;

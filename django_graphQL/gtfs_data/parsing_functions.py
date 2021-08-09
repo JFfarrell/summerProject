@@ -55,12 +55,8 @@ def stops(row, df):
 
 
 def names(row, df):
-    all_names = df["stop_name"].unique().tolist()
-
-    if len(all_names) == 0:
-        names = "None"
-    else:
-        names = ", ".join(all_names)
+    all_names = df["stop_name"].tolist()
+    names = ", ".join(all_names)
     return names
 
 
@@ -85,7 +81,7 @@ def create_uniques_id(row):
 
 
 def gach_ainm(row, df):
-    gach_ainm = df['ainm'].unique().tolist()
+    gach_ainm = df['ainm'].tolist()
     gach_ainm = ([str(x) for x in gach_ainm])
     gach_ainm = ", ".join(gach_ainm)
 
@@ -171,3 +167,15 @@ def departure_times(df):
     first_stop_times = ([str(x) for x in first_stop_times])
     first_stop_times = ", ".join(first_stop_times)
     return first_stop_times
+
+
+def make_string(row):
+    return int(row["stop_sequence"])
+
+
+def sort_by_sequence(df):
+    df['sort'] = df.apply(make_string, axis=1)
+    df.sort_values('sort', inplace=True, ascending=True)
+    df = df.drop('sort', axis=1)
+
+    return df
