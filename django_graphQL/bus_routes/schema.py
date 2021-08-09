@@ -3,7 +3,6 @@ from .types import *
 from .weather import weather_parser
 import pickle
 from .live_data import live_api as live
-from datetime import datetime
 from .live_data import to_timestamp
 
 
