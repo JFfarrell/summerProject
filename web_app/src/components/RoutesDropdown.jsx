@@ -68,7 +68,7 @@ function  RoutesDropdown() {
         { data.uniqueRoutes.filter((val)=> {
           if (routeSearch === "") {
             return val
-          } else if (val.routeNum.toLowerCase().startsWith(routeSearch.toLowerCase())) {
+          } else if (val.lineId.toLowerCase().startsWith(routeSearch.toLowerCase())) {
             return val
           } else {
             return null
