@@ -121,6 +121,7 @@ for line in line_list:
     final_df = final_df.append(longest_inbound)
     final_df = final_df.append(longest_outbound)
 
+final_df = final_df.drop_duplicates(subset=["id"], keep='first')
 print("----final df----")
 print(final_df)
 

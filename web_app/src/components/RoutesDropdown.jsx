@@ -5,7 +5,7 @@ import { StationsContext } from "../contexts/stations";
 const ROUTES = gql`
   query {
     uniqueRoutes {
-        routeNum
+        lineId
         direction
         destination
         longitudes
@@ -36,7 +36,7 @@ function  RoutesDropdown() {
 
     // iterate through gtfs_data and add to organised list
     for (let i = 0; i < stopNums.length; i++) {
-      let newStop = {"routeNum": route.routeNum, "direction": route.direction, "stopName": stopNames[i].trim(), "stopNum": stopNums[i].trim(), "latitude": latitudes[i].trim(), "longitude": longitudes[i].trim()};
+      let newStop = {"lineId": route.lineId, "direction": route.direction, "stopName": stopNames[i].trim(), "stopNum": stopNums[i].trim(), "latitude": latitudes[i].trim(), "longitude": longitudes[i].trim()};
       routeOrganised.push(newStop)
       // console.log(newStop)
     }
@@ -75,7 +75,7 @@ function  RoutesDropdown() {
           }
         }).slice(0, 8).map((route) => {
           return (
-            <input type="button" style={button} key={route.routeNum + "-" + route.direction} value={route.routeNum + " (" + route.direction + ")"} onClick={ () => {chooseRoute(route)}}></input>
+            <input type="button" style={button} key={route.lineId + "-" + route.direction} value={route.lineId + " (" + route.direction + ")"} onClick={ () => {chooseRoute(route)}}></input>
           )
         })}
       </div>
