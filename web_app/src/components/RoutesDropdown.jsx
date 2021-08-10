@@ -32,13 +32,16 @@ function  RoutesDropdown() {
     let stopNames = route.names.split(",");
     let latitudes = route.latitudes.split(",");
     let longitudes = route.longitudes.split(",");
+    let irishNames = route.gachAinm.split(",");
 
     // new array to store organised gtfs_data
     let routeOrganised = [];
 
     // iterate through gtfs_data and add to organised list
     for (let i = 0; i < stopNums.length; i++) {
-      let newStop = {"lineId": route.lineId, "direction": route.direction, "stopName": stopNames[i].trim(), "stopNum": stopNums[i].trim(), "latitude": latitudes[i].trim(), "longitude": longitudes[i].trim()};
+      let newStop = {"lineId": route.lineId, "direction": route.direction, "destination": route.destination,
+      "longitude": longitudes[i].trim(), "latitude": latitudes[i].trim(), "stopName": stopNames[i].trim(), "stopNum": stopNums[i].trim(),
+      "irishName": irishNames[i].trim(), "departureSchedule": route.firstDepartureSchedule};
       routeOrganised.push(newStop)
       // console.log(newStop)
     }
