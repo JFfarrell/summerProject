@@ -58,8 +58,8 @@ class Query(graphene.ObjectType):
           hr = i.split(":")[0].strip("0")
           allTravelTimes.append(model.predict([[day, hr, month, rain, temp]])[0])
 
-        # for redundancy I will include atleast 10 times past the current day to allow wrap around
-        extras = 0
+        # for redundancy I will include at least 10 times past the current day to allow wrap around
+        # extras = 0
         # ----------------------------------------------------------------------------------------------------------
         # come back to this
         # ----------------------------------------------------------------------------------------------------------
@@ -77,20 +77,29 @@ class Query(graphene.ObjectType):
         allArrivalTimes = []
         x = 0
         for i in allTravelTimes:
-          timeDep =  allDepartureTimes[x].split(':')
+          timeDep = allDepartureTimes[x].split(':')
           departureTimeInSeconds = int(timeDep[0])*60*60 + int(timeDep[1])*60 + int(timeDep[2])
           travelTimeToStopInSeconds = (i/numStops)*position
           arrivalTimeInSeconds = (departureTimeInSeconds + travelTimeToStopInSeconds)
 
-          arrivalSecond = int(arrivalTimeInSeconds % 60)
+          arrivalSecond = str(int(arrivalTimeInSeconds % 60))
           remainder = arrivalTimeInSeconds // 60
-          arrivalMinute = int(remainder % 60)
-          arrivalHour = int(remainder // 60)
+          arrivalMinute = str(int(remainder % 60))
+          arrivalHour = str(int(remainder // 60))
 
-          arrivalTime = str(arrivalHour) + ":" + str(arrivalMinute) + ":" + str(arrivalSecond)
+          # elimindate single digits in timestamp
+          if len(arrivalHour) == 1:
+              arrivalHour = f"0{arrivalHour}"
+          if len(arrivalMinute) == 1:
+              arrivalMinute = f"0{arrivalMinute}"
+          if len(arrivalSecond) == 1:
+              arrivalSecond = f"0{arrivalSecond}"
+
+          arrivalTime = arrivalHour + ":" + arrivalMinute + ":" + arrivalSecond
+
           x += 1
-          if (x > len(allDepartureTimes)):
-            x=0
+          if x > len(allDepartureTimes):
+            x = 0
           allArrivalTimes.append(arrivalTime)
 
         # get next x arriving buses, x being provided as "list_size"
