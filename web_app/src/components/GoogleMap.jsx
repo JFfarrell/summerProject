@@ -94,7 +94,7 @@ export default function SimpleMap(){
           )
         }
       });
-      title = <div style={header}><h1>Route: {state[0][0].routeNum} ({state[0][0].direction})</h1></div>
+      title = <div style={header}><h1>Route: {state[0][0].lineId} ({state[0][0].direction})</h1></div>
     } else {
       pins.push(
         <MapPin
