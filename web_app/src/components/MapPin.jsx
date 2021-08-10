@@ -8,9 +8,14 @@ export default function MapPin(props) {
   const { lineId, direction, destination, lng, lat, stopName, stopNum, irishName, departureSchedule, markerColor, openPopup } = props;
 
   useEffect(() => {
-    console.log('updated');
-    prediction = <ArrivalPredictions />;
-  }, []);
+    prediction = <ArrivalPredictions 
+      key={stopNum}
+      route={lineId}
+      direction={direction}
+      stopNum={stopNum}
+      destination={destination}
+    />;
+  }, [direction, lineId, stopNum, destination]);
 
   const marker = {
     backgroundColor: markerColor,
@@ -41,11 +46,12 @@ export default function MapPin(props) {
     display: "none",
     backgroundColor: "lightgrey",
     marginLeft: "-8rem",
-    marginTop: "-26rem",
-    height: "23rem",
+    marginTop: "-28rem",
+    height: "25rem",
     width: "30rem",
     position: "absolute",
-    zIndex: "3"
+    zIndex: "3",
+    borderRadius: "50px"
   };
   const header = {
     paddingTop: "0.5rem",
@@ -75,11 +81,12 @@ export default function MapPin(props) {
       display: "block",
       backgroundColor: "lightgrey",
       marginLeft: "-8rem",
-      marginTop: "-26rem",
-      height: "23rem",
+      marginTop: "-28rem",
+      height: "25rem",
       width: "30rem",
       position: "absolute",
-      zIndex: "3"
+      zIndex: "3",
+      borderRadius: "50px"
     };
   }
 
@@ -131,7 +138,6 @@ export default function MapPin(props) {
             <p style={closeButton} onClick={() => togglePopup(stopName)}>X</p>
           </div>
         </div>
-        <hr />
         {prediction}
       </div>
     </div>

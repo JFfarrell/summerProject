@@ -63,7 +63,7 @@ export default function SimpleMap(){
         } else if (idx === array.length - 1) {
           pins.push(
             <MapPin
-            key={stop.stopNum}
+              key={stop.stopNum}
               lineId={stop.lineId}
               direction={stop.direction}
               destination={stop.destination}
@@ -79,7 +79,7 @@ export default function SimpleMap(){
         } else {
           pins.push(
             <MapPin
-            key={stop.stopNum}
+              key={stop.stopNum}
               lineId={stop.lineId}
               direction={stop.direction}
               destination={stop.destination}

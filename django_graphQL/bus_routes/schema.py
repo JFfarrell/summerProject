@@ -96,7 +96,7 @@ class Query(graphene.ObjectType):
         # get next x arriving buses, x being provided as "list_size"
         nextArrivalTimes = []
         for i in allArrivalTimes:
-          if (int(hour) <= int(i.split(':')[0]) and len(nextArrivalTimes) <= list_size):
+          if (int(hour) <= int(i.split(':')[0]) and len(nextArrivalTimes) < list_size):
             nextArrivalTimes.append(i)
 
         # return data
