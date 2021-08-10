@@ -48,29 +48,47 @@ export default function SimpleMap(){
           pins.push(
             <MapPin
               key={stop.stopNum}
-              lat={stop.latitude}
+              lineId={stop.lineId}
+              direction={stop.direction}
+              destination={stop.destination}
               lng={stop.longitude}
-              name={stop.stopName}
+              lat={stop.latitude}
+              stopName={stop.stopName}
+              stopNum={stop.stopNum}
+              irishName={stop.irishName}
+              departureSchedule={stop.departureSchedule}
               markerColor="green"
             />
           )
         } else if (idx === array.length - 1) {
           pins.push(
             <MapPin
-              key={stop.stopNum}
-              lat={stop.latitude}
+            key={stop.stopNum}
+              lineId={stop.lineId}
+              direction={stop.direction}
+              destination={stop.destination}
               lng={stop.longitude}
-              name={stop.stopName}
+              lat={stop.latitude}
+              stopName={stop.stopName}
+              stopNum={stop.stopNum}
+              irishName={stop.irishName}
+              departureSchedule={stop.departureSchedule}
               markerColor="red"
             />
           )
         } else {
           pins.push(
             <MapPin
-              key={stop.stopNum}
-              lat={stop.latitude}
+            key={stop.stopNum}
+              lineId={stop.lineId}
+              direction={stop.direction}
+              destination={stop.destination}
               lng={stop.longitude}
-              name={stop.stopName}
+              lat={stop.latitude}
+              stopName={stop.stopName}
+              stopNum={stop.stopNum}
+              irishName={stop.irishName}
+              departureSchedule={stop.departureSchedule}
               markerColor="black"
             />
           )

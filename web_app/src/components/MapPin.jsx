@@ -1,5 +1,17 @@
-function MapPin(props) {
-  const { name, markerColor, openPopup } = props;
+import ArrivalPredictions from "./ArrivalPredictions";
+import { useEffect } from "react";
+
+let prediction;
+
+export default function MapPin(props) {
+
+  const { lineId, direction, destination, lng, lat, stopName, stopNum, irishName, departureSchedule, markerColor, openPopup } = props;
+
+  useEffect(() => {
+    console.log('updated');
+    prediction = <ArrivalPredictions />;
+  }, []);
+
   const marker = {
     backgroundColor: markerColor,
     cursor: 'pointer',
@@ -100,30 +112,28 @@ function MapPin(props) {
     <div>
       <div 
         style={marker}
-        onClick={() => togglePopup(name)}
+        onClick={() => togglePopup(stopName)}
       />
       <div
         style={arrow}
         className={"arrow"}
-        id={name+"-arrow"}
+        id={stopName+"-arrow"}
 
       />
       <div 
         style={boxContainer} 
         className={"boxContainer"}
-        id={name+"-boxContainer"}
+        id={stopName+"-boxContainer"}
       >
         <div style={header}>
-          <h3>{name}</h3>
+          <h3>{stopName}</h3>
           <div>
-            <p style={closeButton} onClick={() => togglePopup(name)}>X</p>
+            <p style={closeButton} onClick={() => togglePopup(stopName)}>X</p>
           </div>
         </div>
         <hr />
-        <p>arrival/departure time information here...</p>
+        {prediction}
       </div>
     </div>
   )
 };
-
-export default MapPin;
