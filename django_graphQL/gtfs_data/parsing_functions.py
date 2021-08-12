@@ -18,6 +18,13 @@ def create_id(row):
     return row["shape_id"] + "_" + row["stop_num"]
 
 
+def stop_sequencing_id(row):
+    return row["line_id"] + "_" \
+           + row["stop_num"] + "_" \
+           + row["direction"] + "_" \
+           + str(row["stop_sequence"])
+
+
 # function for isolating the stop number for each row
 def stop_number(row):
     stop_string = row['stop_name'].split(' ')

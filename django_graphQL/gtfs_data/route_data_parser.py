@@ -70,15 +70,14 @@ final_df = pd.DataFrame(columns=col_names)
 print("creating final modifications and unique stops dataframe")
 final_df = final_df.drop_duplicates(subset=["id"], keep='first')
 
-for line in line_list:
+
+def longest_shapes(line):
     print("processing line: ", line)
     temp_df = merged_df[merged_df["line_id"] == line]
     shapes = temp_df["shape_id"].unique().tolist()
-
     # iterate over each of the shapes and split into outbound and inbound
     inbound_shapes = []
     outbound_shapes = []
-
     for shape in shapes:
         direction = shape.split('.')[2]
         if direction == "O":
@@ -105,6 +104,11 @@ for line in line_list:
             longest_length_inbound = temp.shape[0]
             longest_inbound = shape
 
+    return longest_outbound, longest_inbound
+
+
+for line in line_list:
+    longest_outbound, longest_inbound = longest_shapes(line)
     longest_outbound = merged_df[merged_df["shape_id"] == longest_outbound]
     longest_inbound = merged_df[merged_df["shape_id"] == longest_inbound]
 
@@ -143,9 +147,82 @@ unique_stops = unique_stops[["stop_id",
                              "ainm",
                              "stop_num"]].sort_values(by='stop_id')
 
+col_names = ["stop_id",
+             "stop_sequence",
+             "destination",
+             "stop_name",
+             "latitude",
+             "longitude",
+             "ainm",
+             "shape_id",
+             "line_id",
+             "direction",
+             "stop_num",
+             "id"]
+
+pruned_df = pd.DataFrame(columns=col_names)
+
+for line in line_list:
+    longest_outbound, longest_inbound = longest_shapes(line)
+
+    longest_outbound = merged_df[merged_df["shape_id"] == longest_outbound]
+    longest_inbound = merged_df[merged_df["shape_id"] == longest_inbound]
+
+    pruned_df = pruned_df.append(longest_inbound)
+    pruned_df = pruned_df.append(longest_outbound)
+
+all_stops = pruned_df["stop_num"].unique().tolist()
+
+
+def all_routes(row, df):
+    all_lines_for_stop = df["line_id"].unique().tolist()
+
+    return_list = []
+    for line in all_lines_for_stop:
+        line_df = pruned_df[pruned_df["line_id"] == line]
+        all_stops_seqs = line_df["stop_sequence"].unique().tolist()
+        route_length = 0
+        for stop in all_stops_seqs:
+            if stop > route_length:
+                route_length = stop
+
+        sequence = row["stop_sequence"]
+        divisor = round(route_length / sequence, 2)
+
+        return_list.append(f"[{line}: {divisor}]")
+
+    return_list = ", ".join(return_list)
+    return return_list
+
+
+col_names = ["stop_sequence", "line_id", "direction", "stop_num", "stop_route_data"]
+stop_sequencing = pd.DataFrame(columns=col_names)
+
+pruned_df = pruned_df.drop(["destination",
+                            "stop_name",
+                            "latitude",
+                            "longitude",
+                            "ainm",
+                            "stop_id",
+                            "id",
+                            "shape_id"], axis=1)
+
+pruned_df = pruned_df.drop_duplicates()
+
+count = 1
+for stop in all_stops:
+    print(f"Processing stop {stop}. {count} of {len(all_stops)+1}")
+    stop_df = pruned_df[pruned_df["stop_num"] == stop]
+    stop_df = stop_df.drop_duplicates()
+    stop_df["stop_route_data"] = stop_df.apply(all_routes, df=stop_df, axis=1)
+    stop_sequencing = stop_sequencing.append(stop_df)
+    count += 1
+
+stop_sequencing["id"] = stop_sequencing.apply(stop_sequencing_id, axis=1)
 
 print("Complete. Loading to database now.")
 db = sqlite3.connect("../db.sqlite3")
+stop_sequencing.to_sql("bus_routes_stopsequencing", db, if_exists="replace", index=False)
 unique_stops.to_sql("bus_routes_uniquestops", db, if_exists="replace", index=False)
 merged_df.to_sql("bus_routes_busroute", db, if_exists="replace", index=False)
 final_df.to_sql("bus_routes_uniqueroutes", db, if_exists="replace", index=False)
