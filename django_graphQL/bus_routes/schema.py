@@ -14,6 +14,7 @@ class Query(graphene.ObjectType):
                                  direction=graphene.String(required=True),
                                  day=graphene.String(required=True),
                                  hour=graphene.String(required=True),
+                                 minute=graphene.String(required=True),
                                  month=graphene.String(required=True),
                                  rain=graphene.String(required=True),
                                  temp=graphene.String(required=True),
@@ -52,7 +53,7 @@ class Query(graphene.ObjectType):
           if route.line_id == line_id and route.direction == direction:
               return route
 
-    def resolve_prediction(root, info, route, direction, day, hour, month, rain, temp, list_size):
+    def resolve_prediction(root, info, route, direction, day, hour, minute, month, rain, temp, list_size):
         
         # get relevant models pickle file
         model = pickle.load(open(f'./bus_routes/route_models/{direction}/RandForest_{route}.pkl', 'rb'))
@@ -119,7 +120,10 @@ class Query(graphene.ObjectType):
           nextTimes = []
           for j in allArrivalTimes[i]:
             if (int(hour) <= int(j.split(':')[0]) and len(nextTimes) < list_size):
-              nextTimes.append(j)
+              if (int(hour) == int(j.split(':')[0]) and int(minute) > int(j.split(':')[1])):
+                pass
+              else:
+                nextTimes.append(j)
           nextArrivalTimes[i] = nextTimes
 
         # return data

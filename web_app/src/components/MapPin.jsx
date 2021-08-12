@@ -3,8 +3,8 @@ import { useEffect } from "react";
 import { useQuery, gql } from "@apollo/client";
 
 const PREDICTIONS = gql`
-  query Prediction($lineId: String!, $direction: String!, $day: String!, $hour: String!, $month: String!){
-    prediction (route:$lineId, direction:$direction, day:$day, hour:$hour, month:$month, rain:"4", temp:"9", listSize: 10)
+  query Prediction($lineId: String!, $direction: String!, $day: String!, $hour: String!, $minute: String!, $month: String!){
+    prediction (route:$lineId, direction:$direction, day:$day, hour:$hour, minute:$minute, month:$month, rain:"4", temp:"9", listSize: 10)
   }
 `;
 
@@ -35,10 +35,12 @@ export default function MapPin(props) {
   let today = new Date();
   let day = String(today.getDay()-1);
   let hour = String(today.getHours());
+  let minute = String(today.getMinutes());
+  console.log(minute)
   let month = String(today.getMonth()+1);
 
   const { loading, error, data } = useQuery(PREDICTIONS, {
-    variables: { lineId, direction, day, hour, month },
+    variables: { lineId, direction, day, hour, minute, month },
   });
 
   let prediction = [];
