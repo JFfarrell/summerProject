@@ -55,7 +55,7 @@ export default function ArrivalPredictions(props) {
     // for each bus arrivng, push table row
     predictions.forEach((val)=>{
       output.push(
-      <tr>
+      <tr key={destination+val}>
         <td style={items}>{destination}</td>
         <td style={items}>{val}</td>
       </tr>
@@ -66,11 +66,15 @@ export default function ArrivalPredictions(props) {
   return (
     <div>
       <table style={table}>
-        <tr>
-          <th style={header}>Destination</th>
-          <th style={header}>Expected Time</th>
-        </tr>
-        {output}
+        <thead>
+          <tr>
+            <th style={header}>Destination</th>
+            <th style={header}>Expected Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {output}
+        </tbody>
       </table>
     </div>
   );

@@ -1,21 +1,60 @@
 import ArrivalPredictions from "./ArrivalPredictions";
 import { useEffect } from "react";
+import { useQuery, gql } from "@apollo/client";
 
-let prediction;
+const PREDICTIONS = gql`
+  query Prediction($lineId: String!, $direction: String!, $day: String!, $hour: String!, $month: String!){
+    prediction (route:$lineId, direction:$direction, day:$day, hour:$hour, month:$month, rain:"4", temp:"9", listSize: 10)
+  }
+`;
 
 export default function MapPin(props) {
 
   const { lineId, direction, destination, lng, lat, stopName, stopNum, irishName, departureSchedule, markerColor, openPopup } = props;
 
-  useEffect(() => {
-    prediction = <ArrivalPredictions 
-      key={stopNum}
-      route={lineId}
-      direction={direction}
-      stopNum={stopNum}
-      destination={destination}
-    />;
-  }, [direction, lineId, stopNum, destination]);
+  const table = {
+    border: '1px solid black',
+    borderCollapse: 'collapse',
+    margin: '0 0 0 3rem'
+  };
+
+  const tableHeader = {
+    backgroundColor: 'black',
+    color: 'white',
+    padding: '0.4rem 5rem 0.6rem 1rem',
+    textAlign: 'left',
+    whiteSpace: 'nowrap'
+  };
+
+  const items = {
+    padding: '0.25rem 5rem 0.4rem 1rem',
+    textAlign: 'left',
+    whiteSpace: 'nowrap'
+  };
+
+  let today = new Date();
+  let day = String(today.getDay()-1);
+  let hour = String(today.getHours());
+  let month = String(today.getMonth()+1);
+
+  const { loading, error, data } = useQuery(PREDICTIONS, {
+    variables: { lineId, direction, day, hour, month },
+  });
+
+  let prediction = [];
+
+  if (loading) {
+    prediction = "Loading..."
+  }
+  if (error) {
+    prediction = "Error :("
+  } 
+  if (data) {
+    // first the string returned has to be maniupulated to turn into an array
+    let predictionString = data.prediction.replace(new RegExp("'", 'g'), "\"");
+    let predictionObject = JSON.parse(predictionString);
+    prediction = predictionObject[stopNum]
+  }
 
   const marker = {
     backgroundColor: markerColor,
@@ -138,7 +177,25 @@ export default function MapPin(props) {
             <p style={closeButton} onClick={() => togglePopup(stopName)}>X</p>
           </div>
         </div>
-        {prediction}
+        {data
+          ? <table style={table}>
+              <thead>
+                <tr>
+                  <th style={tableHeader}>Destination</th>
+                  <th style={tableHeader}>Expected Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                {prediction.map((val) => (
+                  <tr key={destination+val}>
+                    <td style={items}>{destination}</td>
+                    <td style={items}>{val}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          : <div>{prediction}</div>
+        }
       </div>
     </div>
   )
