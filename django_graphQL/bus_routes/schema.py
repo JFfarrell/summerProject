@@ -12,8 +12,7 @@ class Query(graphene.ObjectType):
                                  month=graphene.String(required=True),
                                  rain=graphene.String(required=True),
                                  temp=graphene.String(required=True),
-                                 list_size=graphene.Int(required=True),
-                                 stop_num=graphene.String(required=True))
+                                 list_size=graphene.Int(required=True))
 
     stops_on_route = graphene.List(UniqueRoutesType,
                                    route_num=graphene.String(required=True),
@@ -41,7 +40,7 @@ class Query(graphene.ObjectType):
           if route.line_id == line_id and route.direction == direction:
               return route
 
-    def resolve_prediction(root, info, route, direction, day, hour, month, rain, temp, list_size, stop_num):
+    def resolve_prediction(root, info, route, direction, day, hour, month, rain, temp, list_size):
         
         # get relevant models pickle file
         model = pickle.load(open(f'./bus_routes/route_models/{direction}/RandForest_{route}.pkl', 'rb'))
@@ -65,48 +64,51 @@ class Query(graphene.ObjectType):
         # ----------------------------------------------------------------------------------------------------------
 
         # predict each arrival time at chosen stop
-        route_data = Query.resolve_stops_on_route(root, info, route, direction)
-        allStops = [x.strip() for x in route_data.stops.split(",")]
-        position = 0
-        for i in allStops:
-          if stop_num == i:
-            break
-          else:
-            position += 1
+        allStops = [x.strip() for x in  Query.resolve_stops_on_route(root, info, route, direction).stops.split(",")]
         numStops = len(allStops)
-        allArrivalTimes = []
-        x = 0
-        for i in allTravelTimes:
-          timeDep = allDepartureTimes[x].split(':')
-          departureTimeInSeconds = int(timeDep[0])*60*60 + int(timeDep[1])*60 + int(timeDep[2])
-          travelTimeToStopInSeconds = (i/numStops)*position
-          arrivalTimeInSeconds = (departureTimeInSeconds + travelTimeToStopInSeconds)
+        position = 0
+        allArrivalTimes = {}
+        for i in allStops:
+          x = 0
+          arrivalTimesForStop = []
+          for j in allTravelTimes:
+            timeDep = allDepartureTimes[x].split(':')
+            departureTimeInSeconds = int(timeDep[0])*60*60 + int(timeDep[1])*60 + int(timeDep[2])
+            travelTimeToStopInSeconds = (j/numStops)*position
+            arrivalTimeInSeconds = (departureTimeInSeconds + travelTimeToStopInSeconds)
 
-          arrivalSecond = str(int(arrivalTimeInSeconds % 60))
-          remainder = arrivalTimeInSeconds // 60
-          arrivalMinute = str(int(remainder % 60))
-          arrivalHour = str(int(remainder // 60))
+            arrivalSecond = str(int(arrivalTimeInSeconds % 60))
+            remainder = arrivalTimeInSeconds // 60
+            arrivalMinute = str(int(remainder % 60))
+            arrivalHour = str(int(remainder // 60))
 
-          # elimindate single digits in timestamp
-          if len(arrivalHour) == 1:
-              arrivalHour = f"0{arrivalHour}"
-          if len(arrivalMinute) == 1:
-              arrivalMinute = f"0{arrivalMinute}"
-          if len(arrivalSecond) == 1:
-              arrivalSecond = f"0{arrivalSecond}"
+            # elimindate single digits in timestamp
+            if len(arrivalHour) == 1:
+                arrivalHour = f"0{arrivalHour}"
+            if len(arrivalMinute) == 1:
+                arrivalMinute = f"0{arrivalMinute}"
+            if len(arrivalSecond) == 1:
+                arrivalSecond = f"0{arrivalSecond}"
 
-          arrivalTime = arrivalHour + ":" + arrivalMinute + ":" + arrivalSecond
+            arrivalTime = arrivalHour + ":" + arrivalMinute + ":" + arrivalSecond
 
-          x += 1
-          if x > len(allDepartureTimes):
-            x = 0
-          allArrivalTimes.append(arrivalTime)
+            x += 1
+            if x > len(allDepartureTimes):
+              x = 0
+
+            arrivalTimesForStop.append(arrivalTime)
+
+          allArrivalTimes[i] = arrivalTimesForStop
+          position += 1
 
         # get next x arriving buses, x being provided as "list_size"
-        nextArrivalTimes = []
+        nextArrivalTimes = {}
         for i in allArrivalTimes:
-          if (int(hour) <= int(i.split(':')[0]) and len(nextArrivalTimes) < list_size):
-            nextArrivalTimes.append(i)
+          nextTimes = []
+          for j in allArrivalTimes[i]:
+            if (int(hour) <= int(j.split(':')[0]) and len(nextTimes) < list_size):
+              nextTimes.append(j)
+          nextArrivalTimes[i] = nextTimes
 
         # return data
         return str(nextArrivalTimes)
