@@ -1,5 +1,5 @@
 import requests
-from .weather_config import api_key
+from .weather_config import api_key, weatherbitio
 
 
 def weather_info():
@@ -29,3 +29,18 @@ def weather_info():
     current_weather["weather"] = j["main"]
     current_weather["icon"] = j["icon"]
     return current_weather
+
+# new weather request function (old function did not get full forecast data, and did not include rain, which is required for our models)
+def weather_forecast():
+  # get forecast
+  forecast = requests.get(weatherbitio)
+  
+  # handle bad request, else process data
+  response = forecast.status_code
+  if response != 200:
+    raise ValueError("url not reached.")
+  else:
+    # convert to json
+    forecast_data = forecast.json()
+    # return
+    return forecast_data
