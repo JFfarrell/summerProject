@@ -7,7 +7,6 @@ from .assistant_functions import *
 import datetime
 import warnings
 warnings.filterwarnings("ignore")
-from datetime import datetime
 
 
 class Query(graphene.ObjectType):
@@ -77,7 +76,7 @@ class Query(graphene.ObjectType):
           if key in weather:
             hourlyWeather = weather[key]
           else:
-            hourlyWeather = weather["0-" + str(datetime.now().hour+1)]
+            hourlyWeather = weather["0-" + str(datetime.datetime.now().hour+1)]
           rain = hourlyWeather["precip"]
           temp = hourlyWeather["temp"]
           allTravelTimes.append(model.predict([[day, hr, month, rain, temp]])[0])
