@@ -44,7 +44,7 @@ class Query(graphene.ObjectType):
         return UniqueStops.objects.all()
 
     def resolve_weather(root, info):
-        weather_dict = weather_parser.weather_info()
+        weather_dict = weather_parser.weather_forecast()
         weather_dict = str(weather_dict)
         return weather_dict
 

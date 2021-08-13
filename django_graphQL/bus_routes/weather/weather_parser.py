@@ -1,4 +1,5 @@
 import requests
+from datetime import datetime
 from .weather_config import api_key, weatherbitio
 
 
@@ -41,6 +42,24 @@ def weather_forecast():
     raise ValueError("url not reached.")
   else:
     # convert to json
-    forecast_data = forecast.json()
+    forecastData = forecast.json()
+
+    # create a dictionary to return data
+    returnDict = {}
+    for i in forecastData["data"]:
+      # get local time for creating dict key, (key = "day from current" + "-" + "hour")
+      localTimestamp = i["timestamp_local"]
+      dayFromCurrent = str(int(localTimestamp.split("T")[0].split("-")[2]) - int(datetime.date(datetime.now()).strftime("%d")))
+      hourOfDay = localTimestamp.split("T")[1].split(":")[0]
+      key = dayFromCurrent + "-" + hourOfDay
+      
+      # get all required weather data, currently only require temperature, precipitation and weather desciption info
+      temp = i["temp"]
+      precip = i["precip"]
+      weather = i["weather"]
+
+      # now build dictionary entry
+      returnDict[key] = { 'temp': temp, 'precip': precip, 'weather': weather }
+
     # return
-    return forecast_data
+    return returnDict
