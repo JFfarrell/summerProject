@@ -48,7 +48,10 @@ a required parameter.
 ![routeByStopQ](https://user-images.githubusercontent.com/71881578/125189419-e946be80-e22f-11eb-99d7-97d16a0746fe.PNG)
 
 - resolve_weather
-![image](https://user-images.githubusercontent.com/71881578/128151494-e791a60a-9a25-4cee-9f96-c8746aebc598.png)
+This query returns a dictionary of hourly weather data for the next 24hrs.
+The key for each dictionary entry follows the following format: "day from current day" + "-" + "hour"
+Only 3 weather data items are included as this is all we require so far, this can be changed easily in the future if required
+![image](https://user-images.githubusercontent.com/25707613/129356397-3ef299c8-0564-43af-a81e-11b7270a6bfd.PNG)
 
 `tests.py`
 Space for unittesting. No unittests currently applied.
