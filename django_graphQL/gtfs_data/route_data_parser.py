@@ -195,11 +195,10 @@ def all_routes(row, df):
     return return_list
 
 
-col_names = ["stop_sequence", "line_id", "direction", "stop_num", "stop_route_data"]
+col_names = ["stop_sequence", "line_id", "direction", "destination", "stop_num", "stop_route_data"]
 stop_sequencing = pd.DataFrame(columns=col_names)
 
-pruned_df = pruned_df.drop(["destination",
-                            "stop_name",
+pruned_df = pruned_df.drop(["stop_name",
                             "latitude",
                             "longitude",
                             "ainm",

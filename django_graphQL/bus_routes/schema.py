@@ -5,7 +5,6 @@ import pickle
 import os
 from .assistant_functions import *
 import datetime
-from datetime import timedelta
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -117,7 +116,7 @@ class Query(graphene.ObjectType):
         predictions = {}
 
         # get data and direction
-        data, direction = data_and_direction(stop_num)
+        data, direction, destination = data_and_direction(stop_num)
 
         for information in data:
             info = information.split(", ")
@@ -140,8 +139,7 @@ class Query(graphene.ObjectType):
                         prediction = travel_times(time, model, day, month)
                         prediction = int(prediction/divisor)
                         prediction = to_timestamp(prediction + all_departure_times_in_seconds[0])
-                        print(prediction)
-                        predictions.update({route + "_" + direction: prediction})
+                        predictions.update({route + "_" + destination: prediction})
                 else:
                     pass
 

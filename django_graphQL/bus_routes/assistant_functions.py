@@ -73,13 +73,15 @@ def travel_times(time, model, day, month):
 def data_and_direction(stop_num):
     data = []
     direction = ""
+    destination = ""
 
     for item in StopSequencing.objects.all():
         if item.stop_num == stop_num:
             data.append(item.stop_route_data)
             direction = item.direction
+            destination = item.destination
 
-    return data, direction
+    return data, direction, destination
 
 
 def correcting_midnight(time):
