@@ -31,7 +31,9 @@ def weather_info():
     current_weather["icon"] = j["icon"]
     return current_weather
 
-# new weather request function (old function did not get full forecast data, and did not include rain, which is required for our models)
+
+# new weather request function (old function did not get full forecast data,
+# and did not include rain, which is required for our models)
 def weather_forecast():
   # get forecast
   forecast = requests.get(weatherbitio)
@@ -59,7 +61,6 @@ def weather_forecast():
       weather = i["weather"]
 
       # now build dictionary entry
-      returnDict[key] = { 'temp': temp, 'precip': precip, 'weather': weather }
+      returnDict[key] = {'temp': temp, 'precip': precip, 'weather': weather}
 
-    # return
     return returnDict

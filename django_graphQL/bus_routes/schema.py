@@ -5,6 +5,7 @@ import pickle
 import os
 from .assistant_functions import *
 import datetime
+from datetime import timedelta
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -24,10 +25,8 @@ class Query(graphene.ObjectType):
 
     stop_predictions = graphene.String(stop_num=graphene.String(required=True),
                                        day=graphene.String(required=True),
-                                       hour=graphene.String(required=True),
-                                       month=graphene.String(required=True),
-                                       rain=graphene.String(required=True),
-                                       temp=graphene.String(required=True))
+                                       #hour=graphene.String(required=True),
+                                       month=graphene.String(required=True))
 
     weather = graphene.String()
     unique_stops = graphene.List(UniqueStopsType)
@@ -52,34 +51,20 @@ class Query(graphene.ObjectType):
               return route
 
     def resolve_prediction(root, info, route, direction, day, hour, minute, month, list_size):
-        
         # get relevant models pickle file
         model = pickle.load(open(f'./bus_routes/route_models/{direction}/RandForest_{route}.pkl', 'rb'))
 
-        # get all departure times for route
-        allDepartureTimes = []
-        for i in UniqueRoutes.objects.all():
-          if (i.line_id == route and i.direction == direction):
-            allDepartureTimes = [x.strip() for x in i.first_departure_schedule.split(',')]
+        # get all departure times
+        all_departure_times = departure_times(route, direction)
 
-        # get weather
-        weather = weather_parser.weather_forecast()
-
+        '''!!! issue here where our weather data only returns forecast data, so buses that have
+        already departed don't have a corresponding weather object
+        this shouldn't be too much of an issue as i will use the closest
+        weather object, which will only be max 2 hrs off, but should revisit if have time'''
         # get all travel times
-        # !!! issue here where our weather data only returns forecast data, so buses that have already departed don't have a corresponding weather object
-        # this shouldn't be too much of an issue as i will use the closest weather object, which will only be max 2 hrs off, but should revisit if have time
-        allTravelTimes = []
-        currentDay = 0
-        for i in allDepartureTimes:
-          hr = i.split(":")[0].strip("0")
-          key = str(currentDay) + "-" + hr
-          if key in weather:
-            hourlyWeather = weather[key]
-          else:
-            hourlyWeather = weather["0-" + str(datetime.datetime.now().hour+1)]
-          rain = hourlyWeather["precip"]
-          temp = hourlyWeather["temp"]
-          allTravelTimes.append(model.predict([[day, hr, month, rain, temp]])[0])
+        all_travel_times = []
+        for time in all_departure_times:
+            all_travel_times.append(travel_times(time, model, day, month))
 
         # for redundancy I will include at least 10 times past the current day to allow wrap around
         # extras = 0
@@ -88,36 +73,24 @@ class Query(graphene.ObjectType):
         # ----------------------------------------------------------------------------------------------------------
 
         # predict each arrival time at chosen stop
-        allStops = [x.strip() for x in  Query.resolve_stops_on_route(root, info, route, direction).stops.split(",")]
+        allStops = [x.strip() for x in Query.resolve_stops_on_route(root, info, route, direction).stops.split(",")]
         numStops = len(allStops)
         position = 0
         allArrivalTimes = {}
         for i in allStops:
           x = 0
           arrivalTimesForStop = []
-          for j in allTravelTimes:
-            timeDep = allDepartureTimes[x].split(':')
+          for j in all_travel_times:
+            timeDep = all_departure_times[x].split(':')
             departureTimeInSeconds = int(timeDep[0])*60*60 + int(timeDep[1])*60 + int(timeDep[2])
             travelTimeToStopInSeconds = (j/numStops)*position
             arrivalTimeInSeconds = (departureTimeInSeconds + travelTimeToStopInSeconds)
 
-            arrivalSecond = str(int(arrivalTimeInSeconds % 60))
-            remainder = arrivalTimeInSeconds // 60
-            arrivalMinute = str(int(remainder % 60))
-            arrivalHour = str(int(remainder // 60))
-
-            # elimindate single digits in timestamp
-            if len(arrivalHour) == 1:
-                arrivalHour = f"0{arrivalHour}"
-            if len(arrivalMinute) == 1:
-                arrivalMinute = f"0{arrivalMinute}"
-            if len(arrivalSecond) == 1:
-                arrivalSecond = f"0{arrivalSecond}"
-
-            arrivalTime = arrivalHour + ":" + arrivalMinute + ":" + arrivalSecond
+            # convert num of seconds to time of day
+            arrivalTime = to_timestamp(arrivalTimeInSeconds)
 
             x += 1
-            if x > len(allDepartureTimes):
+            if x > len(all_departure_times):
               x = 0
 
             arrivalTimesForStop.append(arrivalTime)
@@ -140,47 +113,35 @@ class Query(graphene.ObjectType):
         # return data
         return str(nextArrivalTimes)
 
-    def resolve_stop_predictions(self, info, stop_num, day, hour, month, rain, temp):
+    def resolve_stop_predictions(self, info, stop_num, day, month):
         predictions = {}
-        data = []
-        direction = ""
 
-        format = "%H:%M:%S"
-        for item in StopSequencing.objects.all():
-            if item.stop_num == stop_num:
-                data.append(item.stop_route_data)
-                direction = item.direction
+        # get data and direction
+        data, direction = data_and_direction(stop_num)
+
         for information in data:
             info = information.split(", ")
+            # break down the returned string to return two items, the line_id and the divisor
             for line in info:
                 line_data = line.strip("[]").split(": ")
                 route = line_data[0]
-                print(route)
                 divisor = float(line_data[1])
                 exists = os.path.isfile(f'./bus_routes/route_models/{direction}/RandForest_{route}.pkl')
                 if exists:
-                    current = datetime.datetime.now().time()
-                    print("current time: ", current)
                     # get all departure times for route
-                    allDepartureTimes = []
-                    for i in UniqueRoutes.objects.all():
-                        if i.line_id == route and i.direction == direction:
-                            dep_time = i.first_departure_schedule.split(',')
-                            for time in dep_time:
-                                time = time.strip(" ")
-                                time_stamp = datetime.datetime.strptime(time, format).time()
-                                if time_stamp > current:
-                                    allDepartureTimes.append(time)
+                    all_departure_times = departure_times(route, direction)
+                    all_departure_times_in_seconds = timestamp_to_seconds(all_departure_times)
 
+                    # load appropriate model
                     model = pickle.load(open(f'./bus_routes/route_models/{direction}/RandForest_{route}.pkl', 'rb'))
-                    prediction = int(model.predict([[day, hour, month, rain, temp]])[0])
-                    print(prediction)
-                    prediction = int(prediction/divisor)
-                    allDepartureTimes = timestamp_to_seconds(allDepartureTimes)
-                    for time in allDepartureTimes:
-                        print(to_timestamp(time))
-                    prediction = to_timestamp(prediction + allDepartureTimes[0])
-                    predictions.update({route + "_" + direction: prediction})
+
+                    # current implementation is very slow, so limiting the output
+                    for time in all_departure_times[:1]:
+                        prediction = travel_times(time, model, day, month)
+                        prediction = int(prediction/divisor)
+                        prediction = to_timestamp(prediction + all_departure_times_in_seconds[0])
+                        print(prediction)
+                        predictions.update({route + "_" + direction: prediction})
                 else:
                     pass
 
