@@ -7,6 +7,7 @@ from .assistant_functions import *
 import datetime
 import warnings
 warnings.filterwarnings("ignore")
+from datetime import datetime
 
 
 class Query(graphene.ObjectType):
@@ -16,8 +17,6 @@ class Query(graphene.ObjectType):
                                  hour=graphene.String(required=True),
                                  minute=graphene.String(required=True),
                                  month=graphene.String(required=True),
-                                 rain=graphene.String(required=True),
-                                 temp=graphene.String(required=True),
                                  list_size=graphene.Int(required=True))
 
     stops_on_route = graphene.List(UniqueRoutesType,
@@ -53,7 +52,7 @@ class Query(graphene.ObjectType):
           if route.line_id == line_id and route.direction == direction:
               return route
 
-    def resolve_prediction(root, info, route, direction, day, hour, minute, month, rain, temp, list_size):
+    def resolve_prediction(root, info, route, direction, day, hour, minute, month, list_size):
         
         # get relevant models pickle file
         model = pickle.load(open(f'./bus_routes/route_models/{direction}/RandForest_{route}.pkl', 'rb'))
@@ -64,10 +63,24 @@ class Query(graphene.ObjectType):
           if (i.line_id == route and i.direction == direction):
             allDepartureTimes = [x.strip() for x in i.first_departure_schedule.split(',')]
 
+        # get weather
+        weather = weather_parser.weather_forecast()
+
         # get all travel times
+        # !!! issue here where our weather data only returns forecast data, so buses that have already departed don't have a corresponding weather object
+        # this shouldn't be too much of an issue as i will use the closest weather object, which will only be max 2 hrs off, but should revisit if have time
         allTravelTimes = []
+        currentDay = 0
         for i in allDepartureTimes:
           hr = i.split(":")[0].strip("0")
+          key = str(currentDay) + "-" + hr
+          if key in weather:
+            hourlyWeather = weather[key]
+          else:
+            hourlyWeather = weather["0-" + str(datetime.now().hour+1)]
+          print(hourlyWeather)
+          rain = hourlyWeather["precip"]
+          temp = hourlyWeather["temp"]
           allTravelTimes.append(model.predict([[day, hr, month, rain, temp]])[0])
 
         # for redundancy I will include at least 10 times past the current day to allow wrap around
