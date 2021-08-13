@@ -78,7 +78,6 @@ class Query(graphene.ObjectType):
             hourlyWeather = weather[key]
           else:
             hourlyWeather = weather["0-" + str(datetime.now().hour+1)]
-          print(hourlyWeather)
           rain = hourlyWeather["precip"]
           temp = hourlyWeather["temp"]
           allTravelTimes.append(model.predict([[day, hr, month, rain, temp]])[0])
