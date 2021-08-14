@@ -18,9 +18,18 @@ class Query(graphene.ObjectType):
                                  month=graphene.String(required=True),
                                  list_size=graphene.Int(required=True))
 
+    stop_prediction_tom = graphene.String(stop_num=graphene.String(required=True),
+                                       day=graphene.String(required=True),
+                                       hour=graphene.String(required=True),
+                                       minute=graphene.String(required=True),
+                                       month=graphene.String(required=True),
+                                       list_size=graphene.Int(required=True))
+
     stops_on_route = graphene.List(UniqueRoutesType,
                                    route_num=graphene.String(required=True),
                                    direction=graphene.String(required=True))
+
+    unique_routes = graphene.List(UniqueRoutesType)
 
     stop_predictions = graphene.String(stop_num=graphene.String(required=True),
                                        day=graphene.String(required=True),
@@ -48,6 +57,9 @@ class Query(graphene.ObjectType):
         for route in UniqueRoutes.objects.all():
           if route.line_id == line_id and route.direction == direction:
               return route
+
+    def resolve_all_bus_routes(root, info):
+        return BusRoute.objects.all()
 
     def resolve_prediction(root, info, route, direction, day, hour, minute, month, list_size):
           
@@ -137,6 +149,52 @@ class Query(graphene.ObjectType):
 
       # return data
       return str(nextArrivalTimes)
+
+    def resolve_stop_prediction_tom(self, info, stop_num, day, hour, minute, month, list_size):
+
+      # get all routes through given stop
+      routes = []
+      data, dir, destination = data_and_direction(stop_num)
+      print(data)
+      print(dir)
+      print(destination)
+      for i in data:
+        info = i.split(", ")
+        for line in info:
+          line_data = line.strip("[]").split(": ")
+          route = line_data[0]
+          divisor = line_data[1]
+          routes.append(route + "_" + dir)
+      
+      print(routes)
+      
+      # get relevant models pickle file
+      models = {}
+      for i in routes:
+        models[i] = pickle.load(open(f'./bus_routes/route_models/' + i.split("_")[1] + '/RandForest_' + i.split("_")[0] + '.pkl', 'rb'))
+
+      
+
+      # get all departure times for each route through stop
+      allDepartureTimes = {}
+      for i in UniqueRoutes.objects.all():
+        line_id = i.line_id
+        direction = i.direction
+        key = line_id.lower() + "_" + direction
+        if key in models:
+          allDepartureTimes[key] = [x.strip() for x in i.first_departure_schedule.split(',')]
+
+      # get weather
+
+      # get travel time for each route to chosen stop
+
+      # predict all arrival times for each route
+
+      # filter for "list_size" number of arrivals after current time
+      
+      return str(allDepartureTimes)
+
+
 
     def resolve_stop_predictions(self, info, stop_num, day, month):
         predictions = {}
