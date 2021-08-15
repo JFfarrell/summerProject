@@ -1,3 +1,5 @@
+import itertools
+
 import graphene
 from .types import *
 from .weather import weather_parser
@@ -33,8 +35,10 @@ class Query(graphene.ObjectType):
 
     stop_predictions = graphene.String(stop_num=graphene.String(required=True),
                                        day=graphene.String(required=True),
-                                       #hour=graphene.String(required=True),
-                                       month=graphene.String(required=True))
+                                       hour=graphene.String(required=True),
+                                       minute=graphene.String(required=True),
+                                       month=graphene.String(required=True),
+                                       list_size=graphene.Int(required=True))
 
     weather = graphene.String()
     unique_stops = graphene.List(UniqueStopsType)
@@ -98,7 +102,7 @@ class Query(graphene.ObjectType):
       # ----------------------------------------------------------------------------------------------------------
 
       # predict each arrival time at chosen stop
-      allStops = [x.strip() for x in  Query.resolve_stops_on_route(root, info, route, direction).stops.split(",")]
+      allStops = [x.strip() for x in Query.resolve_stops_on_route(root, info, route, direction).stops.split(",")]
       numStops = len(allStops)
       position = 0
       allArrivalTimes = {}
@@ -173,8 +177,6 @@ class Query(graphene.ObjectType):
       for i in routes:
         models[i] = pickle.load(open(f'./bus_routes/route_models/' + i.split("_")[1] + '/RandForest_' + i.split("_")[0] + '.pkl', 'rb'))
 
-      
-
       # get all departure times for each route through stop
       allDepartureTimes = {}
       for i in UniqueRoutes.objects.all():
@@ -194,16 +196,13 @@ class Query(graphene.ObjectType):
       
       return str(allDepartureTimes)
 
-
-
-    def resolve_stop_predictions(self, info, stop_num, day, month):
+    def resolve_stop_predictions(self, info, stop_num, day, month, hour, minute, list_size):
         predictions = {}
 
         # get data and direction
         stop_data = data_and_direction(stop_num)
 
         for information in stop_data:
-            print("information", information)
             info = information.split("_")
             route_num = info[0]
             divisor = float(info[1])
@@ -213,21 +212,23 @@ class Query(graphene.ObjectType):
             exists = os.path.isfile(f'./bus_routes/route_models/{direction}/RandForest_{route_num}.pkl')
             if exists:
                 # get all departure times for route
-                all_departure_times = departure_times(route_num, direction)
+                all_departure_times = departure_times(route_num, direction, hour, minute)
                 all_departure_times_in_seconds = timestamp_to_seconds(all_departure_times)
 
                 # load appropriate model
                 model = pickle.load(open(f'./bus_routes/route_models/{direction}/RandForest_{route_num}.pkl', 'rb'))
-                print(all_departure_times)
-                # current implementation is very slow, so limiting the output
+
+                # for each time in our list we will return a prediction timestamp
                 for time in all_departure_times:
-                    prediction = travel_times(time, model, day, month)
+                    if len(predictions) >= list_size:
+                        break
+                    prediction = predicted_travel_times(time, model, day, month)
                     prediction = int(prediction/divisor)
                     prediction = to_timestamp(prediction + all_departure_times_in_seconds[0])
                     predictions.update({route_num + "_" + destination + "_" + direction: prediction})
             else:
                 pass
-
+        
         return str(predictions)
 
 

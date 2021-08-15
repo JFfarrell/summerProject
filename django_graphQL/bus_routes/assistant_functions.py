@@ -4,20 +4,23 @@ from .schema import *
 
 
 def to_timestamp(time_in_seconds):
-    arrival_second = str(int(time_in_seconds % 60))
+    second = str(int(time_in_seconds % 60))
     remainder = time_in_seconds // 60
-    arrival_minute = str(int(remainder % 60))
-    arrival_hour = str(int(remainder // 60))
+    minute = str(int(remainder % 60))
+    hour = str(int(remainder // 60))
 
+    return leading_0_timestamp(hour, minute, second)
+
+
+def leading_0_timestamp(hour, minute, second):
     # eliminate single digits in timestamp
-    if len(arrival_hour) == 1:
-        arrival_hour = f"0{arrival_hour}"
-    if len(arrival_minute) == 1:
-        arrival_minute = f"0{arrival_minute}"
-    if len(arrival_second) == 1:
-        arrival_second = f"0{arrival_second}"
-    arrival_time = arrival_hour + ":" + arrival_minute + ":" + arrival_second
-    return arrival_time
+    if len(hour) == 1:
+        hour = f"0{hour}"
+    if len(minute) == 1:
+        minute = f"0{minute}"
+    if len(second) == 1:
+        second = f"0{second}"
+    return hour + ":" + minute + ":" + second
 
 
 def timestamp_to_seconds(time_list):
@@ -33,27 +36,32 @@ def timestamp_to_seconds(time_list):
     return times_in_seconds
 
 
-def departure_times(route, direction):
-    timezone = pytz.timezone('Europe/Dublin')
+def departure_times(route, direction, hour, minute):
+    # timezone = pytz.timezone('Europe/Dublin')
+    # current = datetime.datetime.now(timezone).time()
     time_format = "%H:%M:%S"
+    time_seconds = (int(hour)*3600) + (int(minute)*60)
+    timestamp = to_timestamp(time_seconds)
+    timestamp = datetime.datetime.strptime(timestamp, time_format).time()
     all_departure_times = []
-    current = datetime.datetime.now(timezone).time()
 
+    # check every route and assess its departure times vs user's inputted time
     for unique_route in UniqueRoutes.objects.all():
         if unique_route.line_id == route and unique_route.direction == direction:
             dep_time = unique_route.first_departure_schedule.split(',')
             for time in dep_time:
                 time = time.strip(" ")
+
                 # preventing error thrown when time returned passes midnight
                 time = correcting_midnight(time)
-
                 time_stamp = datetime.datetime.strptime(time, time_format).time()
-                if time_stamp > current:
+                if time_stamp > timestamp:
                     all_departure_times.append(time)
+
     return all_departure_times
 
 
-def travel_times(time, model, day, month):
+def predicted_travel_times(time, model, day, month):
     #weather = weather_parser.weather_forecast()
 
     # current_day = 0
@@ -85,7 +93,6 @@ def data_and_direction(stop_num):
                     data = data.replace(", ", "_")
                     return_data.append(data)
 
-    print(return_data)
     return return_data
 
 
@@ -95,5 +102,5 @@ def correcting_midnight(time):
         hour = int(time_units[0]) - 24
     else:
         hour = int(time_units[0])
-
-    return str(hour) + ":" + time_units[1] + ":" + time_units[2]
+    timestamp = leading_0_timestamp(str(hour), time_units[1], time_units[2])
+    return timestamp
