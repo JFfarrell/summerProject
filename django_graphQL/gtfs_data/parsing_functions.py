@@ -176,6 +176,10 @@ def departure_times(df):
     return first_stop_times
 
 
+def destination_whitespace(row):
+    return row["destination"].lstrip()
+
+
 def make_string(row):
     return int(row["stop_sequence"])
 
@@ -186,3 +190,30 @@ def sort_by_sequence(df):
     df = df.drop('sort', axis=1)
 
     return df
+
+
+def all_routes(row, df, pruned_df):
+    all_lines_for_stop = df["line_id"].unique().tolist()
+
+    return_list = []
+    for line in all_lines_for_stop:
+        # print(f"----{line}----")
+        line_df = pruned_df[pruned_df["line_id"] == line]
+        all_stops_seqs = line_df["stop_sequence"].unique().tolist()
+        route_length = 0
+        for stop in all_stops_seqs:
+            if stop > route_length:
+                route_length = stop
+
+        # print("line length: ", route_length)
+        filtered_df = df[df["line_id"] == line]
+        sequence = filtered_df["stop_sequence"].unique().tolist()[0]
+        destination = filtered_df["destination"].unique().tolist()[0]
+        direction = filtered_df["direction"].unique().tolist()[0]
+        # print("sequence: ", sequence)
+        divisor = round(route_length / sequence, 2)
+
+        return_list.append(f"[{line}, {divisor}, {direction}, {destination}]")
+
+    return_list = ", ".join(return_list)
+    return return_list

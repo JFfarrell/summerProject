@@ -116,32 +116,33 @@ class Query(graphene.ObjectType):
         predictions = {}
 
         # get data and direction
-        data, direction, destination = data_and_direction(stop_num)
+        stop_data = data_and_direction(stop_num)
 
-        for information in data:
-            info = information.split(", ")
-            # break down the returned string to return two items, the line_id and the divisor
-            for line in info:
-                line_data = line.strip("[]").split(": ")
-                route = line_data[0]
-                divisor = float(line_data[1])
-                exists = os.path.isfile(f'./bus_routes/route_models/{direction}/RandForest_{route}.pkl')
-                if exists:
-                    # get all departure times for route
-                    all_departure_times = departure_times(route, direction)
-                    all_departure_times_in_seconds = timestamp_to_seconds(all_departure_times)
+        for information in stop_data:
+            print("information", information)
+            info = information.split("_")
+            route_num = info[0]
+            divisor = float(info[1])
+            direction = info[2]
+            destination = info[3]
 
-                    # load appropriate model
-                    model = pickle.load(open(f'./bus_routes/route_models/{direction}/RandForest_{route}.pkl', 'rb'))
+            exists = os.path.isfile(f'./bus_routes/route_models/{direction}/RandForest_{route_num}.pkl')
+            if exists:
+                # get all departure times for route
+                all_departure_times = departure_times(route_num, direction)
+                all_departure_times_in_seconds = timestamp_to_seconds(all_departure_times)
 
-                    # current implementation is very slow, so limiting the output
-                    for time in all_departure_times[:1]:
-                        prediction = travel_times(time, model, day, month)
-                        prediction = int(prediction/divisor)
-                        prediction = to_timestamp(prediction + all_departure_times_in_seconds[0])
-                        predictions.update({route + "_" + destination: prediction})
-                else:
-                    pass
+                # load appropriate model
+                model = pickle.load(open(f'./bus_routes/route_models/{direction}/RandForest_{route_num}.pkl', 'rb'))
+                print(all_departure_times)
+                # current implementation is very slow, so limiting the output
+                for time in all_departure_times:
+                    prediction = travel_times(time, model, day, month)
+                    prediction = int(prediction/divisor)
+                    prediction = to_timestamp(prediction + all_departure_times_in_seconds[0])
+                    predictions.update({route_num + "_" + destination + "_" + direction: prediction})
+            else:
+                pass
 
         return str(predictions)
 

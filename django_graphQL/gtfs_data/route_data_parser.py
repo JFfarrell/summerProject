@@ -8,6 +8,7 @@ print("reading in data files...")
 stop_times = pd.read_csv("gtfs_datafiles/stop_times.txt")
 stop_times = stop_times.rename(columns={"stop_headsign": "destination"})
 stop_times = stop_times.drop(["pickup_type", "drop_off_type", "shape_dist_traveled"], axis=1)
+stop_times["destination"] = stop_times.apply(destination_whitespace, axis=1)
 stops_df = pd.read_csv("gtfs_datafiles/stops.txt")
 stops_df = stops_df.rename(columns={'stop_lat': 'latitude',
                                     "stop_lon": "longitude"})
@@ -173,28 +174,6 @@ for line in line_list:
 
 all_stops = pruned_df["stop_num"].unique().tolist()
 
-
-def all_routes(row, df):
-    all_lines_for_stop = df["line_id"].unique().tolist()
-
-    return_list = []
-    for line in all_lines_for_stop:
-        line_df = pruned_df[pruned_df["line_id"] == line]
-        all_stops_seqs = line_df["stop_sequence"].unique().tolist()
-        route_length = 0
-        for stop in all_stops_seqs:
-            if stop > route_length:
-                route_length = stop
-
-        sequence = row["stop_sequence"]
-        divisor = round(route_length / sequence, 2)
-
-        return_list.append(f"[{line}: {divisor}]")
-
-    return_list = ", ".join(return_list)
-    return return_list
-
-
 col_names = ["stop_sequence", "line_id", "direction", "destination", "stop_num", "stop_route_data"]
 stop_sequencing = pd.DataFrame(columns=col_names)
 
@@ -213,11 +192,12 @@ for stop in all_stops:
     print(f"Processing stop {stop}. {count} of {len(all_stops)+1}")
     stop_df = pruned_df[pruned_df["stop_num"] == stop]
     stop_df = stop_df.drop_duplicates()
-    stop_df["stop_route_data"] = stop_df.apply(all_routes, df=stop_df, axis=1)
+    stop_df["stop_route_data"] = stop_df.apply(all_routes, df=stop_df, pruned_df=pruned_df, axis=1)
     stop_sequencing = stop_sequencing.append(stop_df)
     count += 1
 
-stop_sequencing["id"] = stop_sequencing.apply(stop_sequencing_id, axis=1)
+stop_sequencing = stop_sequencing.drop(["line_id", "stop_sequence", "direction", "destination"], axis=1)
+stop_sequencing = stop_sequencing.drop_duplicates()
 
 print("Complete. Loading to database now.")
 db = sqlite3.connect("../db.sqlite3")

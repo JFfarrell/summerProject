@@ -48,15 +48,9 @@ class UniqueRoutes(models.Model):
 
 
 class StopSequencing(models.Model):
-    id = models.CharField("id", max_length=20, default="None", primary_key=True)
-    stop_sequence = models.IntegerField("stop_sequence", default=0)
-    line_id = models.CharField("line_id", max_length=10, default="None")
-    direction = models.CharField("direction", max_length=50, default="None")
-    destination = models.CharField("destination", max_length=50, default="None")
-    stop_num = models.CharField("stop_num", max_length=10, default="None")
+    stop_num = models.CharField("id", max_length=10, default="None", primary_key=True)
     stop_route_data = models.TextField("stop_route_data", default="None")
 
     def __str__(self):
         return self.id
-
 

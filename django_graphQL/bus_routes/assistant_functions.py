@@ -54,34 +54,39 @@ def departure_times(route, direction):
 
 
 def travel_times(time, model, day, month):
-    weather = weather_parser.weather_forecast()
+    #weather = weather_parser.weather_forecast()
 
-    current_day = 0
-    hour = time.split(":")[0].strip("0")
-    key = str(current_day) + "-" + hour
-    if key in weather:
-        hourlyWeather = weather[key]
-    else:
-        current = "0-" + str(datetime.datetime.now().hour + 2)
-        hourlyWeather = weather[current]
-
-    rain = hourlyWeather["precip"]
-    temp = hourlyWeather["temp"]
-    return model.predict([[day, hour, month, rain, temp]])[0]
+    # current_day = 0
+    # hour = time.split(":")[0].strip("0")
+    # key = str(current_day) + "-" + hour
+    # if key in weather:
+    #     hourlyWeather = weather[key]
+    # else:
+    #     current = "0-" + str(datetime.datetime.now().hour + 2)
+    #     hourlyWeather = weather[current]
+    #
+    # rain = hourlyWeather["precip"]
+    # temp = hourlyWeather["temp"]
+    # return model.predict([[day, hour, month, rain, temp]])[0]
+    return model.predict([[day, 12, month, 0.5, 16]])[0]
 
 
 def data_and_direction(stop_num):
-    data = []
-    direction = ""
-    destination = ""
+    return_data = []
+    remove_chars = ["[", "]"]
 
     for item in StopSequencing.objects.all():
         if item.stop_num == stop_num:
-            data.append(item.stop_route_data)
-            direction = item.direction
-            destination = item.destination
+            stop_data = item.stop_route_data
+            stop_data = stop_data.split("], [")
+            for character in remove_chars:
+                for data in stop_data:
+                    data = data.replace(character, "")
+                    data = data.replace(", ", "_")
+                    return_data.append(data)
 
-    return data, direction, destination
+    print(return_data)
+    return return_data
 
 
 def correcting_midnight(time):
