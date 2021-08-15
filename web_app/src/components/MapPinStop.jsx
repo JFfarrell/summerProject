@@ -1,16 +1,20 @@
-import ArrivalPredictions from "./ArrivalPredictions";
-import { useEffect } from "react";
 import { useQuery, gql } from "@apollo/client";
 
+// const PREDICTIONS = gql`
+//   query StopPrediction($stopNum: String!, $day: String!, $month: String!, $hour: String!) {
+//     stopPredictions (stopNum:$stopNum, day:$day, month:$month, hour:$hour, rain:"1", temp:"15") 
+//   }
+// `;
+
 const PREDICTIONS = gql`
-  query Prediction($lineId: String!, $direction: String!, $day: String!, $hour: String!, $minute: String!, $month: String!){
-    prediction (route:$lineId, direction:$direction, day:$day, hour:$hour, minute:$minute, month:$month, rain:"4", temp:"9", listSize: 10)
+  query {
+    stopPredictions (stopNum:"198", day:"4", month:"8", hour:"18", rain:"1", temp:"15") 
   }
 `;
 
 export default function MapPin(props) {
 
-  const { lineId, direction, destination, lng, lat, stopName, stopNum, irishName, departureSchedule, markerColor, openPopup } = props;
+  const { destination, stopName, stopNum, markerColor, openPopup } = props;
 
   const table = {
     border: '1px solid black',
@@ -35,12 +39,10 @@ export default function MapPin(props) {
   let today = new Date();
   let day = String(today.getDay()-1);
   let hour = String(today.getHours());
-  let minute = String(today.getMinutes());
-  console.log(minute)
   let month = String(today.getMonth()+1);
 
   const { loading, error, data } = useQuery(PREDICTIONS, {
-    variables: { lineId, direction, day, hour, minute, month },
+    variables: { stopNum, day, month, hour },
   });
 
   let prediction = [];
@@ -53,9 +55,10 @@ export default function MapPin(props) {
   } 
   if (data) {
     // first the string returned has to be maniupulated to turn into an array
-    let predictionString = data.prediction.replace(new RegExp("'", 'g'), "\"");
+    let predictionString = data.stopPredictions.replace(new RegExp("'", 'g'), "\"");
     let predictionObject = JSON.parse(predictionString);
-    prediction = predictionObject[stopNum]
+    prediction = predictionObject
+    console.log(prediction)
   }
 
   const marker = {
@@ -179,25 +182,27 @@ export default function MapPin(props) {
             <p style={closeButton} onClick={() => togglePopup(stopName)}>X</p>
           </div>
         </div>
-        {data
+        {/* {data
           ? <table style={table}>
               <thead>
                 <tr>
+                  <th style={tableHeader}>Route</th>
                   <th style={tableHeader}>Destination</th>
                   <th style={tableHeader}>Expected Time</th>
                 </tr>
               </thead>
               <tbody>
                 {prediction.map((val) => (
-                  <tr key={destination+val}>
-                    <td style={items}>{destination}</td>
+                  <tr key={val}>
                     <td style={items}>{val}</td>
+                    <td style={items}>{destination}</td>
+                    <td style={items}>{prediction[val]}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           : <div>{prediction}</div>
-        }
+        } */}
       </div>
     </div>
   )
