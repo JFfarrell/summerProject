@@ -85,7 +85,7 @@ class Query(graphene.ObjectType):
       allTravelTimes = []
       currentDay = 0
       for i in allDepartureTimes:
-        hr = i.split(":")[0].strip("0")
+        hr = i.split(":")[0]
         key = str(currentDay) + "-" + hr
         if key in weather:
           hourlyWeather = weather[key]
@@ -93,13 +93,17 @@ class Query(graphene.ObjectType):
           hourlyWeather = weather["0-" + str(datetime.datetime.now().hour+1)]
         rain = hourlyWeather["precip"]
         temp = hourlyWeather["temp"]
-        allTravelTimes.append(model.predict([[day, hr, month, rain, temp]])[0])
+        allTravelTimes.append("0_" + str(model.predict([[day, hr, month, rain, temp]])[0]))
 
-      # for redundancy I will include at least 10 times past the current day to allow wrap around
-      # extras = 0
-      # ----------------------------------------------------------------------------------------------------------
-      # come back to this
-      # ----------------------------------------------------------------------------------------------------------
+      # if number of stops listed is less than 'list_size', get stops from next day
+      currentDay = 1
+      for i in allDepartureTimes:
+        hr = i.split(":")[0]
+        key = str(currentDay) + "-" + hr
+        hourlyWeather = weather[key]
+        rain = hourlyWeather["precip"]
+        temp = hourlyWeather["temp"]
+        allTravelTimes.append("1_" + str(model.predict([[day, hr, month, rain, temp]])[0]))
 
       # predict each arrival time at chosen stop
       allStops = [x.strip() for x in Query.resolve_stops_on_route(root, info, route, direction).stops.split(",")]
@@ -110,9 +114,11 @@ class Query(graphene.ObjectType):
         x = 0
         arrivalTimesForStop = []
         for j in allTravelTimes:
+          day = j.split("_")[0]
+          time = float(j.split("_")[1])
           timeDep = allDepartureTimes[x].split(':')
           departureTimeInSeconds = int(timeDep[0])*60*60 + int(timeDep[1])*60 + int(timeDep[2])
-          travelTimeToStopInSeconds = (j/numStops)*position
+          travelTimeToStopInSeconds = (time/numStops)*position
           arrivalTimeInSeconds = (departureTimeInSeconds + travelTimeToStopInSeconds)
 
           arrivalSecond = str(int(arrivalTimeInSeconds % 60))
@@ -128,10 +134,13 @@ class Query(graphene.ObjectType):
           if len(arrivalSecond) == 1:
               arrivalSecond = f"0{arrivalSecond}"
 
-          arrivalTime = arrivalHour + ":" + arrivalMinute + ":" + arrivalSecond
+          if day == "1":
+            arrivalTime = arrivalHour + ":" + arrivalMinute + ":" + arrivalSecond + " (tomorrow)"
+          else:
+            arrivalTime = arrivalHour + ":" + arrivalMinute + ":" + arrivalSecond
 
           x += 1
-          if x > len(allDepartureTimes):
+          if x > len(allDepartureTimes)-1:
             x = 0
 
           arrivalTimesForStop.append(arrivalTime)
@@ -144,11 +153,16 @@ class Query(graphene.ObjectType):
       for i in allArrivalTimes:
         nextTimes = []
         for j in allArrivalTimes[i]:
-          if (int(hour) <= int(j.split(':')[0]) and len(nextTimes) < list_size):
-            if (int(hour) == int(j.split(':')[0]) and int(minute) > int(j.split(':')[1])):
-              pass
+          if (len(nextTimes) < list_size):
+            if (len(j.split(':')[2]) == 2):
+              if (int(hour) <= int(j.split(':')[0])):
+                if (int(hour) == int(j.split(':')[0]) and int(minute) > int(j.split(':')[1])):
+                  pass
+                else:
+                  nextTimes.append(j)
             else:
               nextTimes.append(j)
+
         nextArrivalTimes[i] = nextTimes
 
       # return data
@@ -159,18 +173,14 @@ class Query(graphene.ObjectType):
       # get all routes through given stop
       routes = []
       data, dir, destination = data_and_direction(stop_num)
-      print(data)
-      print(dir)
-      print(destination)
       for i in data:
         info = i.split(", ")
         for line in info:
           line_data = line.strip("[]").split(": ")
           route = line_data[0]
+          # this divisor will probably need to be passed somehow, without effecting the ability to search by key in next section
           divisor = line_data[1]
           routes.append(route + "_" + dir)
-      
-      print(routes)
       
       # get relevant models pickle file
       models = {}
@@ -188,7 +198,7 @@ class Query(graphene.ObjectType):
 
       # get weather
 
-      # get travel time for each route to chosen stop
+      # predict travel time for each routes departure to chosen stop
 
       # predict all arrival times for each route
 
