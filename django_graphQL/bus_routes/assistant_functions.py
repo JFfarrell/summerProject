@@ -36,13 +36,7 @@ def timestamp_to_seconds(time_list):
     return times_in_seconds
 
 
-def departure_times(route, direction, hour, minute):
-    # timezone = pytz.timezone('Europe/Dublin')
-    # current = datetime.datetime.now(timezone).time()
-    time_format = "%H:%M:%S"
-    time_seconds = (int(hour)*3600) + (int(minute)*60)
-    timestamp = to_timestamp(time_seconds)
-    timestamp = datetime.datetime.strptime(timestamp, time_format).time()
+def departure_times(route, direction):
     all_departure_times = []
 
     # check every route and assess its departure times vs user's inputted time
@@ -51,15 +45,25 @@ def departure_times(route, direction, hour, minute):
             dep_time = unique_route.first_departure_schedule.split(',')
             for time in dep_time:
                 time = time.strip(" ")
-
                 # preventing error thrown when time returned passes midnight
                 time = correcting_midnight(time)
-                time_stamp = datetime.datetime.strptime(time, time_format).time()
-                # only return times past current time
-                if time_stamp > timestamp:
-                    all_departure_times.append(time)
+                all_departure_times.append(time)
 
     return all_departure_times
+
+
+def user_time(hour, minute, prediction):
+    time_format = "%H:%M:%S"
+    time_seconds = (int(hour) * 3600) + (int(minute) * 60)
+    prediction = correcting_midnight(prediction)
+
+    # convert seconds to timestamp string
+    timestamp = to_timestamp(time_seconds)
+    # convert timestamp string to timestamp object
+    timestamp = datetime.datetime.strptime(timestamp, time_format).time()
+    prediction = datetime.datetime.strptime(prediction, time_format).time()
+
+    return timestamp, prediction
 
 
 def predicted_travel_times(time, model, day, month):
@@ -106,23 +110,3 @@ def correcting_midnight(time):
     timestamp = leading_0_timestamp(str(hour), time_units[1], time_units[2])
     return timestamp
 
-
-def correct_position(predictions):
-    temp = []
-    print(predictions)
-    for prediction in predictions:
-        time = prediction.split("_")[-1]
-        if len(temp) == 0:
-            temp.append(prediction)
-        else:
-            for item in range(len(temp)):
-                compare_time = temp[item].split("_")[-1]
-                if time < compare_time:
-                    temp.insert(item, prediction)
-                    break
-                if time > compare_time:
-                    if temp[item] == temp[-1]:
-                        temp.append(prediction)
-                    else:
-                        pass
-    return temp

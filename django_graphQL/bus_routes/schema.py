@@ -208,7 +208,6 @@ class Query(graphene.ObjectType):
 
     def resolve_stop_predictions(self, info, stop_num, day, month, hour, minute, list_size):
         predictions = []
-        soonest = []
         # get data and direction
         stop_data = data_and_direction(stop_num)
 
@@ -222,37 +221,44 @@ class Query(graphene.ObjectType):
             exists = os.path.isfile(f'./bus_routes/route_models/{direction}/RandForest_{route_num}.pkl')
             if exists:
                 # get all departure times for route
-                all_departure_times = departure_times(route_num, direction, hour, minute)
+                all_departure_times = departure_times(route_num, direction)
                 all_departure_times_in_seconds = timestamp_to_seconds(all_departure_times)
 
                 # load appropriate model
                 model = pickle.load(open(f'./bus_routes/route_models/{direction}/RandForest_{route_num}.pkl', 'rb'))
-
+                counter = 0
                 # for each time in our list we will return a prediction timestamp
-                for time in all_departure_times[:list_size]:
+                for time in all_departure_times:
+                    print(time)
                     prediction = predicted_travel_times(time, model, day, month)
                     prediction = int(prediction/divisor)
-                    prediction = to_timestamp(prediction + all_departure_times_in_seconds[0])
-                    predictions.append(f"{route_num}_{destination}_{direction}_{prediction}")
+                    prediction = to_timestamp(prediction + all_departure_times_in_seconds[counter])
+                    cut_off_time, prediction_time = user_time(hour, minute, prediction)
+
+                    # assessment for times in the past
+                    if cut_off_time < prediction_time:
+                        predictions.append(f"{route_num}_{destination}_{direction}_{prediction}")
+                    counter += 1
 
             else:
                 pass
-        output = []
-        for prediction in predictions:
-            prediction = prediction.replace("]", "")
-            soonest.sort()
-            time = prediction.split("_")[-1]
-            if len(soonest) < list_size and prediction not in output:
-                soonest.append(time)
-                output.append(prediction)
-            if len(soonest) >= list_size:
-                if time < soonest[-1] and prediction not in output:
-                    soonest.pop()
-                    soonest.append(time)
-                    output.append(prediction)
 
-        output = correct_position(output)
-        return str(output)
+        output = [predictions[0]]
+        for value in range(list_size):
+            for prediction in predictions:
+                if prediction not in output:
+                    prediction = prediction.replace("]", "")
+                    prediction = prediction.replace("\\", "")
+                    temp_time = prediction.split("_")[-1]
+                    for item in range(len(output)):
+                        if prediction not in output:
+                            check = output[item]
+                            if temp_time < check.split("_")[-1]:
+                                output.insert(item, prediction)
+                            elif len(output) <= list_size and item == len(output) -1:
+                                output.append(prediction)
+
+        return str(output[:list_size])
 
 
 schema = graphene.Schema(
