@@ -55,6 +55,7 @@ def departure_times(route, direction, hour, minute):
                 # preventing error thrown when time returned passes midnight
                 time = correcting_midnight(time)
                 time_stamp = datetime.datetime.strptime(time, time_format).time()
+                # only return times past current time
                 if time_stamp > timestamp:
                     all_departure_times.append(time)
 
@@ -104,3 +105,24 @@ def correcting_midnight(time):
         hour = int(time_units[0])
     timestamp = leading_0_timestamp(str(hour), time_units[1], time_units[2])
     return timestamp
+
+
+def correct_position(predictions):
+    temp = []
+    print(predictions)
+    for prediction in predictions:
+        time = prediction.split("_")[-1]
+        if len(temp) == 0:
+            temp.append(prediction)
+        else:
+            for item in range(len(temp)):
+                compare_time = temp[item].split("_")[-1]
+                if time < compare_time:
+                    temp.insert(item, prediction)
+                    break
+                if time > compare_time:
+                    if temp[item] == temp[-1]:
+                        temp.append(prediction)
+                    else:
+                        pass
+    return temp

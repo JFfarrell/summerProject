@@ -197,8 +197,8 @@ class Query(graphene.ObjectType):
       return str(allDepartureTimes)
 
     def resolve_stop_predictions(self, info, stop_num, day, month, hour, minute, list_size):
-        predictions = {}
-
+        predictions = []
+        soonest = []
         # get data and direction
         stop_data = data_and_direction(stop_num)
 
@@ -219,17 +219,30 @@ class Query(graphene.ObjectType):
                 model = pickle.load(open(f'./bus_routes/route_models/{direction}/RandForest_{route_num}.pkl', 'rb'))
 
                 # for each time in our list we will return a prediction timestamp
-                for time in all_departure_times:
-                    if len(predictions) >= list_size:
-                        break
+                for time in all_departure_times[:list_size]:
                     prediction = predicted_travel_times(time, model, day, month)
                     prediction = int(prediction/divisor)
                     prediction = to_timestamp(prediction + all_departure_times_in_seconds[0])
-                    predictions.update({route_num + "_" + destination + "_" + direction: prediction})
+                    predictions.append(f"{route_num}_{destination}_{direction}_{prediction}")
+
             else:
                 pass
-        
-        return str(predictions)
+        output = []
+        for prediction in predictions:
+            prediction = prediction.replace("]", "")
+            soonest.sort()
+            time = prediction.split("_")[-1]
+            if len(soonest) < list_size and prediction not in output:
+                soonest.append(time)
+                output.append(prediction)
+            if len(soonest) >= list_size:
+                if time < soonest[-1] and prediction not in output:
+                    soonest.pop()
+                    soonest.append(time)
+                    output.append(prediction)
+
+        output = correct_position(output)
+        return str(output)
 
 
 schema = graphene.Schema(
