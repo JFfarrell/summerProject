@@ -102,7 +102,9 @@ export default function SimpleMap(){
           key={state[0].stopNum}
           lat={state[0].latitude}
           lng={state[0].longitude}
-          name={state[0].stopName}
+          stopName={state[0].stopName}
+          stopNum={state[0].stopNum}
+          irishName={state[0].irishName}
           markerColor={"black"}
           openPopup={true}
         />

@@ -1,20 +1,14 @@
 import { useQuery, gql } from "@apollo/client";
 
-// const PREDICTIONS = gql`
-//   query StopPrediction($stopNum: String!, $day: String!, $month: String!, $hour: String!) {
-//     stopPredictions (stopNum:$stopNum, day:$day, month:$month, hour:$hour, rain:"1", temp:"15") 
-//   }
-// `;
-
 const PREDICTIONS = gql`
-  query {
-    stopPredictions (stopNum:"198", day:"4", month:"8", hour:"18", rain:"1", temp:"15") 
+  query StopPredictions ($stopNum: String!, $day: String!, $month: String!, $hour: String!, $minute: String!) {
+    stopPredictions (stopNum:$stopNum, day:$day, month:$month, hour:$hour, minute:$minute, listSize: 10) 
   }
 `;
 
 export default function MapPin(props) {
 
-  const { destination, stopName, stopNum, markerColor, openPopup } = props;
+  const { stopName, stopNum, markerColor, openPopup } = props;
 
   const table = {
     border: '1px solid black',
@@ -25,13 +19,13 @@ export default function MapPin(props) {
   const tableHeader = {
     backgroundColor: 'black',
     color: 'white',
-    padding: '0.4rem 5rem 0.6rem 1rem',
+    padding: '0.4rem 3.8rem 0.6rem 1rem',
     textAlign: 'left',
     whiteSpace: 'nowrap'
   };
 
   const items = {
-    padding: '0.25rem 5rem 0.4rem 1rem',
+    padding: '0.25rem 3.8rem 0.4rem 1rem',
     textAlign: 'left',
     whiteSpace: 'nowrap'
   };
@@ -39,26 +33,28 @@ export default function MapPin(props) {
   let today = new Date();
   let day = String(today.getDay()-1);
   let hour = String(today.getHours());
+  let minute = String(today.getMinutes());
   let month = String(today.getMonth()+1);
 
   const { loading, error, data } = useQuery(PREDICTIONS, {
-    variables: { stopNum, day, month, hour },
+    variables: { stopNum, day, month, hour, minute },
   });
 
   let prediction = [];
 
   if (loading) {
-    prediction = "Loading..."
+    prediction = "Loading...";
   }
   if (error) {
-    prediction = "Error :("
+    prediction = "Error :(";
   } 
   if (data) {
     // first the string returned has to be maniupulated to turn into an array
-    let predictionString = data.stopPredictions.replace(new RegExp("'", 'g'), "\"");
-    let predictionObject = JSON.parse(predictionString);
-    prediction = predictionObject
-    console.log(prediction)
+    let predictionString = data.stopPredictions;
+    predictionString = predictionString.replace("[", "");
+    predictionString = predictionString.replace("]", "");
+    predictionString = predictionString.replace(new RegExp("'", 'g'), "");
+    prediction = predictionString.split(", ");
   }
 
   const marker = {
@@ -182,7 +178,7 @@ export default function MapPin(props) {
             <p style={closeButton} onClick={() => togglePopup(stopName)}>X</p>
           </div>
         </div>
-        {/* {data
+        {data
           ? <table style={table}>
               <thead>
                 <tr>
@@ -194,15 +190,15 @@ export default function MapPin(props) {
               <tbody>
                 {prediction.map((val) => (
                   <tr key={val}>
-                    <td style={items}>{val}</td>
-                    <td style={items}>{destination}</td>
-                    <td style={items}>{prediction[val]}</td>
+                    <td style={items}>{val.split("_")[0]}</td>
+                    <td style={items}>{val.split("_")[1]}</td>
+                    <td style={items}>{val.split("_")[3]}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           : <div>{prediction}</div>
-        } */}
+        }
       </div>
     </div>
   )
