@@ -3,7 +3,7 @@ import pytz
 from .schema import *
 
 
-def to_timestamp(time_in_seconds):
+def seconds_to_timestamp(time_in_seconds):
     second = str(int(time_in_seconds % 60))
     remainder = time_in_seconds // 60
     minute = str(int(remainder % 60))
@@ -23,13 +23,20 @@ def leading_0_timestamp(hour, minute, second):
     return hour + ":" + minute + ":" + second
 
 
+def unit_to_seconds(hour, minute):
+    ftr = [3600, 60, 1]
+    total_secs = (int(hour) * ftr[0]) + (int(minute[1]) * ftr[1])
+
+    return total_secs
+
+
 def timestamp_to_seconds(time_list):
     ftr = [3600, 60, 1]
     times_in_seconds = []
 
     for time in time_list:
         time_units = time.split(':')
-        total_secs = (int(time_units[0]) * ftr[2]) + (int(time_units[1]) * ftr[1]) + (int(time_units[0]) * ftr[0])
+        total_secs = (int(time_units[0]) * ftr[0]) + (int(time_units[1]) * ftr[1]) + (int(time_units[0]) * ftr[2])
         times_in_seconds.append(total_secs)
 
     times_in_seconds.sort()
@@ -58,7 +65,7 @@ def user_time(hour, minute, prediction):
     prediction = correcting_midnight(prediction)
 
     # convert seconds to timestamp string
-    timestamp = to_timestamp(time_seconds)
+    timestamp = seconds_to_timestamp(time_seconds)
     # convert timestamp string to timestamp object
     timestamp = datetime.datetime.strptime(timestamp, time_format).time()
     prediction = datetime.datetime.strptime(prediction, time_format).time()
