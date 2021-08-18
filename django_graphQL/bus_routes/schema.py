@@ -1,3 +1,5 @@
+import itertools
+
 import graphene
 from .types import *
 from .weather import weather_parser
@@ -6,7 +8,6 @@ import os
 from .assistant_functions import *
 import datetime
 import warnings
-
 warnings.filterwarnings("ignore")
 
 
