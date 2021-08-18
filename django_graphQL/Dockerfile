@@ -1,5 +1,5 @@
 # pull the official base image
-FROM python:3.9.5-alpine
+FROM python:3.9.5
 
 # set work directory
 WORKDIR /usr/src/app
@@ -10,8 +10,8 @@ ENV PYTHONUNBUFFERED 1
 
 # install dependencies
 RUN pip install --upgrade pip 
-COPY ./dockerRequirements.txt /usr/src/app
-RUN pip install -r dockerRequirements.txt
+COPY ./requirements.txt /usr/src/app
+RUN pip install -r requirements.txt
 
 # copy project
 COPY . /usr/src/app
