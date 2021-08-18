@@ -207,3 +207,14 @@ def predictions_list(all_departure_times, day, hour, minute, month, rain, temp, 
                 predicted_time = new_key + "_" + seconds_to_timestamp(predicted_time) + "(tomorrow)"
                 predictions.append(predicted_time)
     return predictions
+
+
+def get_all_routes_for_stop(stop_num):
+    routes = []
+    characters = ["[", "]", "\\"]
+    data = data_and_direction(stop_num)
+    for information in data:
+        for char in characters:
+            information = information.replace(char, "")
+        routes.append(information)
+    return routes
