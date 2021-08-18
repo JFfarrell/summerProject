@@ -198,7 +198,7 @@ class Query(graphene.ObjectType):
             output = ordering_predictions(list_size, before_midnight)
 
             # if we need further times to fill our list size, we can continue with times after midnight
-            if len(after_midnight) > 0 and before_midnight < list_size:
+            if len(after_midnight) > 0 and len(before_midnight) < list_size:
                 after_midnight = ordering_predictions(list_size, after_midnight)
 
                 for time in after_midnight:
