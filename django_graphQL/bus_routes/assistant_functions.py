@@ -114,7 +114,6 @@ def ordering_predictions(list_size, predictions):
                         output.insert(item, prediction)
                     elif len(output) <= list_size and item == len(output) - 1:
                         output.append(prediction)
-
     return output
 
 

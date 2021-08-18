@@ -196,9 +196,13 @@ class Query(graphene.ObjectType):
         if len(predictions) > 0:
             before_midnight, after_midnight = before_or_after_midnight(predictions)
             output = ordering_predictions(list_size, before_midnight)
-            after_midnight = ordering_predictions(list_size, after_midnight)
-            for time in after_midnight:
-                output.append(time + " (tomorrow)")
+
+            # if we need further times to fill our list size, we can continue with times after midnight
+            if len(after_midnight) > 0 and before_midnight < list_size:
+                after_midnight = ordering_predictions(list_size, after_midnight)
+
+                for time in after_midnight:
+                    output.append(time + " (tomorrow)")
 
             # if the requested list size is not filled, check for time in the next day
             if len(output) < list_size:
@@ -216,6 +220,7 @@ class Query(graphene.ObjectType):
                     output.append(time + " (tomorrow)")
 
             output = ", ".join(str(elem) for elem in output[:list_size])
+            print(output)
             return output
 
         return "No buses available."
