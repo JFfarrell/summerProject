@@ -45,6 +45,14 @@ The key for each dictionary entry follows the following format: "day from curren
 Only 3 weather data items are included as this is all we require so far, this can be changed easily in the future if required
 ![image](https://user-images.githubusercontent.com/25707613/129356397-3ef299c8-0564-43af-a81e-11b7270a6bfd.PNG)
 
+- `resolve_prediction`
+This query is used to return a prediction of bus arrival times at all stops along a given route, the list size parameter tis used to filter the number of upcoming buses returned. The predictions are made using our previously trained random forest models, accounting for weather and time in making their predictions. An example query can be seen below:
+![image](https://user-images.githubusercontent.com/25707613/129721425-6751b261-f7d3-4f81-a8dd-e2cfa0916f17.PNG)
+
+- `resolve_stop_predictions`
+This query is used to predict arrival times of all buses to a given stop, again list size filters to reutrn only a given number of buses. an example query can be seen below:
+![image](https://user-images.githubusercontent.com/25707613/129721753-dd65a499-402e-4f2b-a297-016ffbb4cb0f.PNG)
+
 `tests.py`
 Space for unittesting. No unittests currently applied.
 
