@@ -126,7 +126,7 @@ function  RoutesDropdown() {
     width: "100%",
     height: "2rem",
     margin: "3% 0",
-    backgroundColor: "red"
+    backgroundColor: "grey"
   };
   const removeButton = {
     height: "2rem",
