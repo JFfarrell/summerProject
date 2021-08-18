@@ -184,25 +184,37 @@ class Query(graphene.ObjectType):
         let's take the current time for now'''
         rain = 0.5
         temp = 15
+        current_day = 0
         # time = seconds_to_timestamp(unit_to_seconds(hour, minute))
         # weather = weather_parser.weather_forecast()
-        # rain, temp = return_weather(weather, time, 0)
+        # rain, temp = return_weather(weather, time, current_day)
 
         # get a list of all predictions
         predictions = []
-        predictions = predictions_list(all_departure_times, day, hour, minute, month, rain, temp, predictions, "today")
+        predictions = predictions_list(all_departure_times, day, hour, minute, month, rain, temp, predictions, False)
 
         if len(predictions) > 0:
-            output = ordering_predictions(list_size, predictions)
+            before_midnight, after_midnight = before_or_after_midnight(predictions)
+            output = ordering_predictions(list_size, before_midnight)
+            after_midnight = ordering_predictions(list_size, after_midnight)
+            for time in after_midnight:
+                output.append(time + " (tomorrow)")
+
+            # if the requested list size is not filled, check for time in the next day
             if len(output) < list_size:
+                current_day = 1
                 print("Looking to next day...")
                 # time = seconds_to_timestamp(unit_to_seconds(6, 0))
                 # rain, temp = return_weather(weather, time, 1)
                 day = str(int(day)+1)
-                tomorrow_predictions = predictions_list(all_departure_times, day, hour, minute, month, rain, temp, predictions, "tomorrow")
-                for prediction in tomorrow_predictions:
-                    predictions.append(prediction)
-                output = ordering_predictions(list_size, predictions)
+                tomorrow_predictions = []
+                tomorrow_predictions = predictions_list(all_departure_times, day, hour, minute, month, rain, temp, tomorrow_predictions, True)
+                before_midnight, after_midnight = before_or_after_midnight(tomorrow_predictions)
+                next_day_output = ordering_predictions(list_size, before_midnight)
+
+                for time in next_day_output[:list_size]:
+                    output.append(time + " (tomorrow)")
+
             output = ", ".join(str(elem) for elem in output[:list_size])
             return output
 

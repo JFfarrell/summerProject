@@ -114,6 +114,7 @@ def ordering_predictions(list_size, predictions):
                         output.insert(item, prediction)
                     elif len(output) <= list_size and item == len(output) - 1:
                         output.append(prediction)
+
     return output
 
 
@@ -190,7 +191,7 @@ def return_cut_off_and_predicted_times(hour, item, minute, predicted_journey_tim
     return cut_off_time, predicted_time
 
 
-def predictions_list(all_departure_times, day, hour, minute, month, rain, temp, predictions, today):
+def predictions_list(all_departure_times, day, hour, minute, month, rain, temp, predictions, tomorrow):
     # predict travel time for each routes departure to chosen stop
     for key, value in all_departure_times.items():
         new_key, predicted_journey_time = return_journey_time_and_key(day, hour, key, month, rain, temp)
@@ -198,14 +199,11 @@ def predictions_list(all_departure_times, day, hour, minute, month, rain, temp, 
         for item in value:
             cut_off_time, predicted_time = return_cut_off_and_predicted_times(hour, item, minute,
                                                                               predicted_journey_time)
-            if cut_off_time < predicted_time < 9000:
-                print(cut_off_time)
+            if (cut_off_time < predicted_time and tomorrow is False) or tomorrow is True:
                 predicted_timestamp = seconds_to_timestamp(predicted_time)
                 predicted_time = new_key + "_" + predicted_timestamp
                 predictions.append(predicted_time)
-            else:
-                predicted_time = new_key + "_" + seconds_to_timestamp(predicted_time) + "(tomorrow)"
-                predictions.append(predicted_time)
+
     return predictions
 
 
@@ -218,3 +216,18 @@ def get_all_routes_for_stop(stop_num):
             information = information.replace(char, "")
         routes.append(information)
     return routes
+
+
+def before_or_after_midnight(times_list):
+    after_midnight_stamps = ["00", "01", "02", "03", "04"]
+    before_midnight = []
+    after_midnight = []
+
+    for time in times_list:
+        hour = time.split("_")[-1].split(":")[0]
+        if hour in after_midnight_stamps:
+            after_midnight.append(time)
+        else:
+            before_midnight.append(time)
+
+    return before_midnight, after_midnight
