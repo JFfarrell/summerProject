@@ -128,7 +128,7 @@ function  StopsDropdown() {
           } else {
             return null
           }
-        }).slice(0, 8).map((stop) => {
+        }).slice(0, 8-favourites.length).map((stop) => {
           return (
             <input type="button" style={button} key={stop.stopNum} value={stop.stopNum} onClick={ () => {chooseStop(stop)}}></input>
           )
