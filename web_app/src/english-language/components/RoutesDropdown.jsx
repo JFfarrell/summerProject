@@ -111,7 +111,7 @@ function  RoutesDropdown() {
   }
 
   const container = {
-    width: "13vw",
+    width: "14vw",
     minWidth: "11rem",
   };
   const buttonContainer = {
@@ -119,7 +119,7 @@ function  RoutesDropdown() {
   };
   const favouriteDiv = {
     display: "grid",
-    gridTemplateColumns: "5fr 1fr"
+    gridTemplateColumns: "20fr 1fr"
   };
   const favouritesButton = {
     display: "block",
@@ -132,6 +132,10 @@ function  RoutesDropdown() {
     height: "2rem",
     margin: "14% 0"
   }
+  const notFavouriteDiv = {
+    display: "grid",
+    gridTemplateColumns: "20fr 1fr"
+  };
   const button = {
     display: "block",
     width: "100%",
@@ -144,12 +148,12 @@ function  RoutesDropdown() {
 
   return (
     <div style={container}>
-      <h3>Choose a Route</h3>
-      <input type="text" placeholder="Search by route number" onChange={event => {setRouteSearch(event.target.value)}} />
+      <h3>Search By Route</h3>
+      <input type="text" placeholder="route number" onChange={event => {setRouteSearch(event.target.value)}} />
       <div style={buttonContainer}>
         {favourites.map((route) => {
           return (
-            <div style={favouriteDiv} key={"favdiv-" + route.lineId + "-" + route.direction}><input type="button" style={favouritesButton} key={"favinput-" + route.lineId + "-" + route.direction} value={route.lineId + " (" + route.direction + ")"} onClick={ () => {chooseRoute(route)}}></input><CloseButton onClick={() => {removeFromRouteFavourites(route)}} style={removeButton}><MdDelete/></CloseButton></div>
+            <div style={favouriteDiv} key={"favdiv-" + route.lineId + "-" + route.direction}><input type="button" style={favouritesButton} key={"favinput-" + route.lineId + "-" + route.direction} value={route.lineId + " (" + route.direction + ")"} onClick={ () => {chooseRoute(route)}}></input><CloseButton onClick={() => {removeFromRouteFavourites(route)}} style={removeButton}></CloseButton></div>
           )
         })}
         { data.uniqueRoutes.filter((val)=> {
@@ -162,7 +166,7 @@ function  RoutesDropdown() {
           }
         }).slice(0, 8-favourites.length).map((route) => {
           return (
-            <input type="button" style={button} key={route.lineId + "-" + route.direction} value={route.lineId + " (" + route.direction + ")"} onClick={ () => {chooseRoute(route)}}></input>
+            <div style={notFavouriteDiv}><input type="button" style={button} key={route.lineId + "-" + route.direction} value={route.lineId + " (" + route.direction + ")"} onClick={ () => {chooseRoute(route)}}></input></div>
           )
         })}
       </div>

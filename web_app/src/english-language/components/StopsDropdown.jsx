@@ -112,8 +112,8 @@ function  StopsDropdown() {
 
   return (
     <div style={container}>
-      <h3>Choose a Stop</h3>
-      <input type="text" placeholder="Search by stop number" onChange={event => {setStopSearch(event.target.value)}} />
+      <h3>Search By Stop</h3>
+      <input type="text" placeholder="stop number" onChange={event => {setStopSearch(event.target.value)}} />
       <div style={buttonContainer}>
         {favourites.map((stop) => {
           return (
