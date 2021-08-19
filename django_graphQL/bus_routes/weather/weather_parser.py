@@ -35,7 +35,7 @@ def weather_info():
 # new weather request function (old function did not get full forecast data,
 # and did not include rain, which is required for our models)
 def weather_forecast():
-  
+
     # get forecast
     forecast = requests.get(weatherbitio)
 

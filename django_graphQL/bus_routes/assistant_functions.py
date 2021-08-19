@@ -121,6 +121,7 @@ def return_departure_times(models):
     all_departure_times = {}
     for i in UniqueRoutes.objects.all():
         line_id = i.id
+        print(line_id)
         for key, value in models.items():
             if key == line_id:
                 destination = value[1]

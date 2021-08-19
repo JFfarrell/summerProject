@@ -59,9 +59,6 @@ class Query(graphene.ObjectType):
             if route.line_id == line_id and route.direction == direction:
                 return route
 
-    def resolve_all_bus_routes(root, info):
-        return BusRoute.objects.all()
-
     def resolve_prediction(root, info, route, direction, day, hour, minute, month, list_size):
         # get relevant models pickle file
         model = pickle.load(open(f'./bus_routes/route_models/{direction}/RandForest_{route}.pkl', 'rb'))
@@ -97,8 +94,8 @@ class Query(graphene.ObjectType):
                 departure_time_in_seconds = int(time_dep[0]) * 60 * 60 + int(time_dep[1]) * 60 + int(time_dep[2])
                 travel_time_to_stop_in_seconds = (time / num_stops) * position
                 arrival_time_in_seconds = (departure_time_in_seconds + travel_time_to_stop_in_seconds)
-
                 arrival_time = seconds_to_timestamp(arrival_time_in_seconds)
+
                 if day == "1":
                     arrival_time = arrival_time + " (tomorrow)"
 
