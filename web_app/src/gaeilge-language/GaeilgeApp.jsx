@@ -21,19 +21,25 @@ export default function EnglishApp(props) {
     window.matchMedia("(min-width: 1000px)").addEventListener("change", (handler));
   }, [state]);
 
+  const app = {
+    marginTop: "4rem"
+  };
+  const header = {
+    marginBottom: "2rem"
+  };
   
   return (
-    <div >
+    <div style={app}>
     {state.matches && (
       <div className="App">
         <header className="App-header">
-          <h1>Best Bus</h1>
+          <h1 style={header}>Best Bus</h1>
         </header>
         <Tabs>
           <TabList>
-            <Tab>Realtime</Tab>
-            <Tab>Journey Planner</Tab>
-            <Tab>Settings</Tab>
+            <Tab>Fíor am</Tab>
+            <Tab>Pleanálaí Turas</Tab>
+            <Tab>Socruithe</Tab>
           </TabList>
   
           <TabPanel>

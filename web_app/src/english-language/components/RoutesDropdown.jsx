@@ -2,7 +2,7 @@ import { useQuery, gql } from "@apollo/client";
 import { useContext, useState, useEffect } from "react";
 import { StationsContext } from "../contexts/stations";
 import CloseButton from 'react-bootstrap/CloseButton';
-import { MdDelete } from "react-icons/md";
+import ListGroup from 'react-bootstrap/ListGroup';
 
 const ROUTES = gql`
   query {
@@ -33,10 +33,6 @@ function  RoutesDropdown() {
     setFavourites(getRouteFavourites())
     setUpdateFavourites(false)
   }, [updateFavourites])
-
-  // function setFavourites(favs) {
-  //   localStorage.setItem('favourites', JSON.stringify(favs));
-  // }
 
   // fucntion to get the route favourites from local storage
   function getRouteFavourites() {
@@ -105,42 +101,27 @@ function  RoutesDropdown() {
       routeOrganised.push(newStop)
     }
 
-    // console.log(routeOrganised)
-
     dispatch({type: "update_stations", payload: [routeOrganised]})
   }
 
   const container = {
-    width: "14vw",
-    minWidth: "11rem",
+    width: "13vw",
+    minWidth: "15rem"
   };
-  const buttonContainer = {
-    height: "10rem"
+  const input = {
+    width: "13vw",
+    margin: "1rem 1rem 1rem 0"
   };
-  const favouriteDiv = {
+  const item = {
     display: "grid",
-    gridTemplateColumns: "20fr 1fr"
+    gridTemplateColumns: "10fr 1fr"
   };
-  const favouritesButton = {
-    display: "block",
-    width: "100%",
-    height: "2rem",
-    margin: "3% 0",
-    backgroundColor: "grey"
+  const favourite = {
+    backgroundColor: "#4992bb"
   };
   const removeButton = {
-    height: "2rem",
-    margin: "14% 0"
-  }
-  const notFavouriteDiv = {
-    display: "grid",
-    gridTemplateColumns: "20fr 1fr"
-  };
-  const button = {
-    display: "block",
-    width: "100%",
-    height: "2rem",
-    margin: "3% 0"
+    padding: "0.7rem",
+    marginRight: "-3rem"
   };
 
   if (loading) return <p>Loading...</p>;
@@ -149,11 +130,11 @@ function  RoutesDropdown() {
   return (
     <div style={container}>
       <h3>Search By Route</h3>
-      <input type="text" placeholder="route number" onChange={event => {setRouteSearch(event.target.value)}} />
-      <div style={buttonContainer}>
+      <input style={input} type="text" placeholder="route number" onChange={event => {setRouteSearch(event.target.value)}} />
+      <ListGroup>
         {favourites.map((route) => {
           return (
-            <div style={favouriteDiv} key={"favdiv-" + route.lineId + "-" + route.direction}><input type="button" style={favouritesButton} key={"favinput-" + route.lineId + "-" + route.direction} value={route.lineId + " (" + route.direction + ")"} onClick={ () => {chooseRoute(route)}}></input><CloseButton onClick={() => {removeFromRouteFavourites(route)}} style={removeButton}></CloseButton></div>
+            <div style={item} key={"favdiv-" + route.lineId + "-" + route.direction}><ListGroup.Item style={favourite} action onClick={() => {chooseRoute(route)}}>{route.lineId} ({route.direction})</ListGroup.Item><CloseButton style={removeButton} onClick={() => {removeFromRouteFavourites(route)}}></CloseButton></div>
           )
         })}
         { data.uniqueRoutes.filter((val)=> {
@@ -166,10 +147,10 @@ function  RoutesDropdown() {
           }
         }).slice(0, 8-favourites.length).map((route) => {
           return (
-            <div style={notFavouriteDiv}><input type="button" style={button} key={route.lineId + "-" + route.direction} value={route.lineId + " (" + route.direction + ")"} onClick={ () => {chooseRoute(route)}}></input></div>
+            <div style={item} key={route.lineId + "-" + route.direction}><ListGroup.Item action onClick={() => {chooseRoute(route)}}>{route.lineId} ({route.direction})</ListGroup.Item></div>
           )
         })}
-      </div>
+      </ListGroup>
     </div>
   )
 }

@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import EnglishApp from './english-language/EnglishApp';
 import GaeilgeApp from './gaeilge-language/GaeilgeApp';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 let language = null;
 class App extends Component {

@@ -5,8 +5,8 @@ function PlannerTab() {
   return(
     <div>
 
-      <h1>Plan your route</h1>
-      <p>Enter an origin and destination and we will find the best route using public transport</p>
+      <h1>Pleanagaí bhfur turas</h1>
+      <p>Cuir isteach tionscnamh agus ceann scríbe agus gheobhaidh muid an bealach is fearr ag úsáid iompar poiblí</p>
       <br/>
 
       <GoogleDirections />

@@ -13,11 +13,11 @@ function SettingsTab() {
   return(
     <div style={container}>
       <div style={feature}>
-        <h3>Choose Language:</h3>
-        <p>Choose between English or Gaeilge</p>
+        <h3>Roghnaigh Teanga:</h3>
+        <p>Roghnaigh idir Béarla nó Gaeilge</p>
         <Dropdown>
           <Dropdown.Toggle id="dropdown-button-dark-example1" variant="secondary">
-            Language
+            Teanga
           </Dropdown.Toggle>
 
           <Dropdown.Menu variant="dark">
@@ -27,10 +27,10 @@ function SettingsTab() {
         </Dropdown>
       </div>
       <div style={feature}>
-        <h3>Install app:</h3>
-        <p>For ease of use, we suggest installing this app on your device for better performance and ease of accessibility.</p>
-        <p>To make this possible, this app is a PWA (progressive web app). Go to your browser settings and click the option "Install Best Bus".</p>
-        <p>Unfortunatley, some browsers and devices do not support this feature.</p>
+        <h3>Shuiteáil an aip:</h3>
+        <p>Don feidhmiú agus inrochtaineacht is fearr molaimid duit an aip a suiteáil ar do gléas.</p>
+        <p>Le haigh sé seo a bheith indéanta is aip gréasáin forásach í an aip seo. Teigh go dtí socruite do brabhsálaí gréasáin agus cliceáil ar an rogha "Install Best Bus".</p>
+        <p>Faroar níl an gné seo ar fáil ar gach gléas no brabhsálaí gréasáin.</p>
       </div>
     </div>
 

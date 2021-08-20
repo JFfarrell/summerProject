@@ -7,16 +7,17 @@ function RealtimeTab() {
   const content = {
     display: "grid",
     margin: "5rem 3rem",
-    gridTemplateRows: "1fr 2fr"
+    gridTemplateRows: "1fr 1fr"
   };
   const dropdownsContainer = {
-    background: "lightgrey",
     gridColumnStart: "1",
     gridColumnEnd: "2",
     margin: "3rem",
     display: "grid",
     gridTemplateColumns: "1fr 1fr",
-    height: "500px"
+    height: "550px",
+    borderRadius: "1rem",
+    backgroundColor: "#fbc31c"
   };
   const stopsDropdownContainer  = {
     margin: "3rem 5rem"
@@ -25,10 +26,10 @@ function RealtimeTab() {
     margin: "3rem"
   };
   const mapContainer = {
-    background: "lightgrey",
     gridColumnStart: "1",
     gridColumnEnd: "2",
-    margin: "0 3rem"
+    margin: "0 3rem",
+    height: "700px"
   };
   return(
     <StationsProvider>

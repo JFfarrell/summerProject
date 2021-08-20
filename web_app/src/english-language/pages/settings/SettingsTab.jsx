@@ -30,7 +30,7 @@ function SettingsTab() {
         <h3>Install app:</h3>
         <p>For ease of use, we suggest installing this app on your device for better performance and ease of accessibility.</p>
         <p>To make this possible, this app is a PWA (progressive web app). Go to your browser settings and click the option "Install Best Bus".</p>
-        <p>Unfortunatley, some browsers and devices do not support this feature.</p>
+        <p>Unfortunately, some browsers and devices do not support this feature.</p>
       </div>
     </div>
 

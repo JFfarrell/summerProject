@@ -182,16 +182,16 @@ export default function MapPin(props) {
           ? <table style={table}>
               <thead>
                 <tr>
-                  <th style={tableHeader}>Route</th>
-                  <th style={tableHeader}>Destination</th>
-                  <th style={tableHeader}>Expected Time</th>
+                  <th style={tableHeader}>Slí</th>
+                  <th style={tableHeader}>Ceann Scríbe</th>
+                  <th style={tableHeader}>Meastachán Ama</th>
                 </tr>
               </thead>
               <tbody>
                 {prediction.map((val) => (
                   <tr key={val}>
                     <td style={items}>{val.split("_")[0]}</td>
-                    <td style={items}>{val.split("_")[1]}</td>
+                    <td style={items}>{val.split("_")[2]}</td>
                     <td style={items}>{val.split("_")[3]}</td>
                   </tr>
                 ))}

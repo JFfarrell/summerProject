@@ -95,7 +95,7 @@ export default function SimpleMap(){
           )
         }
       });
-      title = <div style={header}><h1>Route: {state[0][0].lineId} ({state[0][0].direction})</h1></div>
+      title = <div style={header}><h1>Slí: {state[0][0].lineId} ({state[0][0].gaeilgeDirection})</h1></div>
     } else {
       pins.push(
         <MapPinStop
@@ -104,12 +104,12 @@ export default function SimpleMap(){
           lng={state[0].longitude}
           stopName={state[0].stopName}
           stopNum={state[0].stopNum}
-          irishName={state[0].irishName}
+          irishName={state[0].ainm}
           markerColor={"black"}
           openPopup={true}
         />
       )
-      title = <div style={header}><h1>Stop: {state[0].stopNum}</h1></div>
+      title = <div style={header}><h1>Stad: {state[0].stopNum}</h1></div>
     }
   }
 

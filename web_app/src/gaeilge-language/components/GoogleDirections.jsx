@@ -131,7 +131,7 @@ export default function GoogleDirections() {
             }}
           />
         </div>
-        <button style={chooseRouteButton} onClick={calcRoute}>Calculate Route</button>
+        <button style={chooseRouteButton} onClick={calcRoute}>Ríomh Slí</button>
       </div>
       {/* Map component */}
       <GoogleMap
