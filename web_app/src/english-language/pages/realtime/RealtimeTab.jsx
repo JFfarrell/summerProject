@@ -28,7 +28,6 @@ function RealtimeTab() {
     margin: "1rem 3rem"
   };
   const mapContainer = {
-    background: "lightgrey",
     gridColumnStart: "2",
     gridColumnEnd: "3",
     margin: "0 3rem"
