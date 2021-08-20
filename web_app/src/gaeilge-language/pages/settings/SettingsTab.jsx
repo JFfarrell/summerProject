@@ -9,6 +9,7 @@ function SettingsTab() {
     width: "70%",
     padding: "3rem 3rem",
     backgroundColor: '#fbc31c',
+    borderRadius: "1rem",
   };
   const dropdown = {
     backgroundColor: '#4992bb',
