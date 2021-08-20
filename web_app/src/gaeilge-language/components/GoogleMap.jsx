@@ -23,11 +23,11 @@ export default function SimpleMap(){
   const header = {
     position: 'absolute',
     zIndex: '2',
-    backgroundColor: 'white',
+    backgroundColor: '#4992bb',
     marginTop: '2.5rem',
     marginLeft: '5rem',
     borderRadius: '1rem',
-    padding: '0 1.5rem'
+    padding: '0.5rem 2rem'
   };
 
   function closePopups() {
