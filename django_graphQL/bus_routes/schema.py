@@ -144,8 +144,10 @@ class Query(graphene.ObjectType):
 
         current_day = 0
         time = seconds_to_timestamp(unit_to_seconds(hour, minute))
-        weather = weather_parser.weather_forecast()
-        rain, temp = return_weather(weather, time, current_day)
+        # weather = weather_parser.weather_forecast()
+        # rain, temp = return_weather(weather, time, current_day)
+        rain = 0.2
+        temp = 16
 
         # get a list of all predictions
         predictions = []
