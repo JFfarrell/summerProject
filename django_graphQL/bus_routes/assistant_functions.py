@@ -27,7 +27,7 @@ def units_to_timestamp(hour, minute, second):
 
 def unit_to_seconds(hour, minute):
     ftr = [3600, 60, 1]
-    total_secs = (int(hour) * ftr[0]) + (int(minute[1]) * ftr[1])
+    total_secs = (int(hour) * ftr[0]) + (int(minute) * ftr[1])
 
     return total_secs
 
@@ -68,7 +68,7 @@ def return_weather(weather, time, current_day):
     if key in weather:
         hourly_weather = weather[key]
     else:
-        current = "0-" + str(int(current_time.split(":")[0] + 1))
+        current = "0-" + str(int(current_time.split(":")[0]) + 1)
         hourly_weather = weather[current]
 
     rain = hourly_weather["precip"]
