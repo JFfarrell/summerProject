@@ -141,12 +141,11 @@ class Query(graphene.ObjectType):
         '''we could choose to iterate over all the times and get weather 
         predictions for all, but it seems wasteful...
         let's take the current time for now'''
-        rain = 0.5
-        temp = 15
+
         current_day = 0
-        # time = seconds_to_timestamp(unit_to_seconds(hour, minute))
-        # weather = weather_parser.weather_forecast()
-        # rain, temp = return_weather(weather, time, current_day)
+        time = seconds_to_timestamp(unit_to_seconds(hour, minute))
+        weather = weather_parser.weather_forecast()
+        rain, temp = return_weather(weather, time, current_day)
 
         # get a list of all predictions
         predictions = []
