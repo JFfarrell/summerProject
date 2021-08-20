@@ -22,6 +22,7 @@ class UniqueRoutes(models.Model):
     latitudes = models.TextField("latitudes", default="None")
     longitudes = models.TextField("longitudes", default="None")
     destination = models.CharField("destination", max_length=50, default="None")
+    ceann_scribe = models.CharField("ceann_scribe", max_length=50, default="None")
     direction = models.CharField("direction", max_length=50, default="None")
     first_departure_schedule = models.TextField("first_departure_schedule", default="None")
 
