@@ -17,7 +17,6 @@ ceann_scribe = pd.read_csv("gtfs_datafiles/ainms_ceann_scribe.csv")
 
 print("creating merged dataframe")
 merged_df = pd.merge(stop_times, stops_df, left_on='stop_id', right_on='stop_id')
-print(merged_df)
 
 # we need some gtfs_data from an extra file containing more info per each stop
 print("adding irish names to dataframe")
@@ -51,6 +50,10 @@ merged_df["stop_name"] = merged_df.apply(stop_name, axis=1)
 print("adding irish destination names")
 merged_df["ceann_scribe"] = merged_df.apply(agus_ceann_scribe, df=ceann_scribe, axis=1)
 
+print("removing null values where irish names not present. replace with english names.")
+merged_df["ceann_scribe"].fillna(merged_df["destination"], inplace=True)
+merged_df["ainm"].fillna(merged_df["stop_name"], inplace=True)
+
 print("done. creating list of line_ids and an empty dataframe")
 line_list = merged_df["line_id"].unique().tolist()
 
@@ -61,7 +64,6 @@ final_df = pd.DataFrame(columns=col_names)
 
 print("creating final modifications and unique stops dataframe")
 final_df = final_df.drop_duplicates(subset=["id"], keep='first')
-
 
 
 for line in line_list:

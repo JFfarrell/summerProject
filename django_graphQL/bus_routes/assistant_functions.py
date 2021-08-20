@@ -2,6 +2,7 @@ import datetime
 import pytz
 from .schema import *
 import pickle
+from .apis import time_data
 
 
 def seconds_to_timestamp(time_in_seconds):
@@ -61,12 +62,13 @@ def departure_times(route, direction):
 
 
 def return_weather(weather, time, current_day):
+    current_time = time_data.time_data()
     hour = time.split(":")[0].strip("0")
     key = str(current_day) + "-" + hour
     if key in weather:
         hourly_weather = weather[key]
     else:
-        current = "0-" + str(datetime.datetime.now().hour + 2)
+        current = "0-" + str(int(current_time.split(":")[0] + 1))
         hourly_weather = weather[current]
 
     rain = hourly_weather["precip"]
@@ -121,7 +123,6 @@ def return_departure_times(models):
     all_departure_times = {}
     for i in UniqueRoutes.objects.all():
         line_id = i.id
-        print(line_id)
         for key, value in models.items():
             if key == line_id:
                 destination = value[1]
@@ -216,13 +217,15 @@ def before_or_after_midnight(times_list):
 def return_travel_times(all_departure_times, day, model, month, weather):
     all_travel_times = []
     current_day = 0
+    current_time = time_data.time_data()
+
     for i in all_departure_times:
         hr = i.split(":")[0]
         key = str(current_day) + "-" + hr
         if key in weather:
             hourly_weather = weather[key]
         else:
-            hourly_weather = weather["0-" + str(datetime.datetime.now().hour + 1)]
+            hourly_weather = weather["0-" + str(int(current_time.split(":")[0]) + 1)]
         rain = hourly_weather["precip"]
         temp = hourly_weather["temp"]
         all_travel_times.append("0_" + str(model.predict([[day, hr, month, rain, temp]])[0]))

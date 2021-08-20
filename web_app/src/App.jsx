@@ -1,11 +1,13 @@
 import './App.css';
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
+import { ThemeProvider} from "react-bootstrap";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import RealtimeTab from './pages/realtime/RealtimeTab'
 import RealtimeTabMobile from './pages/realtime/RealtimeTabMobile.jsx'
 import PlannerTab from './pages/planner/PlannerTab'
 import SettingsTab from './pages/settings/SettingsTab'
+
 class App extends Component {
   constructor(props) {
     super(props)

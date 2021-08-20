@@ -2,8 +2,11 @@
 def agus_ainm(row, first_list, filtered_list):
     if row['stop_id'] in filtered_list:
         item = first_list[filtered_list.index(row['stop_id'])]
+        if item[1] == "":
+            print("no name")
         print(item[1])
         return item[1]
+
 
 
 # function to find and match the row with its correct customer facing route number

@@ -1,6 +1,6 @@
 import graphene
 from .types import *
-from .weather import weather_parser
+from .apis import weather_parser
 import pickle
 import os
 from .assistant_functions import *
