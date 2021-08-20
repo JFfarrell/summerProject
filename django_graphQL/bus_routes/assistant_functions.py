@@ -27,6 +27,7 @@ def units_to_timestamp(hour, minute, second):
 
 def unit_to_seconds(hour, minute):
     ftr = [3600, 60, 1]
+    hour, minute, second = units_to_timestamp(hour, minute, "0").split(":")
     total_secs = (int(hour) * ftr[0]) + (int(minute[1]) * ftr[1])
 
     return total_secs
@@ -68,7 +69,7 @@ def return_weather(weather, time, current_day):
     if key in weather:
         hourly_weather = weather[key]
     else:
-        current = "0-" + str(int(current_time.split(":")[0] + 1))
+        current = "0-" + str(int(current_time.split(":")[0]) + 1)
         hourly_weather = weather[current]
 
     rain = hourly_weather["precip"]
@@ -81,7 +82,7 @@ def data_and_direction(stop_num):
     remove_chars = ["[", "]"]
 
     for item in StopSequencing.objects.all():
-        if item.stop_num == stop_num:
+        if str(item) == stop_num:
             stop_data = item.stop_route_data
             stop_data = stop_data.split("], [")
             for character in remove_chars:
