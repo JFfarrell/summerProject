@@ -68,7 +68,11 @@ def return_weather(weather, time, current_day):
     if key in weather:
         hourly_weather = weather[key]
     else:
-        current = "0-" + str(int(current_time.split(":")[0]) + 1)
+        hr = str(int(current_time.split(":")[0]) + 1)
+        if (len(hr) == 1):
+          current = "0-0" + str(int(current_time.split(":")[0]) + 1)
+        else:
+          current = "0-" + str(int(current_time.split(":")[0]) + 1)
         hourly_weather = weather[current]
 
     rain = hourly_weather["precip"]
